@@ -1,27 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#121212">
+    android:background="#0D0E15">
 
-    <TextView
-        android:id="@+id/tvHeader"
+    <!-- टॉप हेडर -->
+    <LinearLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:text="Desi SuperApp"
-        android:textColor="#00E676"
-        android:textSize="22sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <GridView
-        android:id="@+id/toolsGrid"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Desi SuperApp ⚡"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="160+ AI, Hardware &amp; Utility Tools"
+            android:textColor="#88889D"
+            android:textSize="12sp" />
+
+        <!-- सर्च बार -->
+        <EditText
+            android:id="@+id/etSearchTools"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginTop="12dp"
+            android:background="#1B1C26"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:drawablePadding="10dp"
+            android:hint="Search 160+ tools (e.g. speaker, bg, challan)..."
+            android:inputType="text"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#66667A"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- हॉरिजॉन्टल कैटेगरी टैब्स स्क्रॉलर -->
+    <HorizontalScrollView
+        android:id="@+id/categoryScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topBar"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/chipGroupCategories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp" />
+    </HorizontalScrollView>
+
+    <!-- 2-कॉलम टूल्स ग्रिड -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvToolsGrid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2"
-        android:padding="12dp"
-        android:verticalSpacing="12dp"
-        android:horizontalSpacing="12dp" />
+        android:layout_below="@id/categoryScroll"
+        android:clipToPadding="false"
+        android:padding="10dp" />
 
-</LinearLayout>
+</RelativeLayout>
