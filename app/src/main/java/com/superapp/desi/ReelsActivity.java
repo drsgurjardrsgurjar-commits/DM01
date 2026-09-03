@@ -1,4 +1,4 @@
-        package com.superapp.desi;
+package com.superapp.desi;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -201,4 +201,4 @@ public class ReelsActivity extends AppCompatActivity {
             loader = itemView.findViewById(R.id.reelLoader);
         }
     }
-                    }
+                                             }    
