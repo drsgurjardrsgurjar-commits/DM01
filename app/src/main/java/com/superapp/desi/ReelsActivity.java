@@ -1,7 +1,6 @@
 package com.superapp.desi;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -37,7 +37,6 @@ public class ReelsActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private SharedPreferences prefs;
 
-    // 100% वेरिफाइड 1M+ व्यूज वाले शॉर्ट्स का डिफॉल्ट पूल (राजस्थानी, हरियाणवी, कॉमेडी, वायरल गाने)
     private static final String DEFAULT_POOL = 
             "zdLcWQUAFAk:comedy,GA0W1gsDozg:comedy,7HD_WpkdRPY:haryanvi,kBWTo6N_2iE:haryanvi," +
             "DwqyqXZmiXU:haryanvi,xbsPqNeO560:haryanvi,m8e-Cq9I_d4:rajasthani,fRh_vgS2dFE:haryanvi," +
@@ -61,15 +60,33 @@ public class ReelsActivity extends AppCompatActivity {
         }
 
         viewPager = findViewById(R.id.viewPagerReels);
-        // आगे और पीछे की वीडियो पहले से बफर रहेगी ताकि काली स्क्रीन न आए
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(1); // सिर्फ आगे की 1 वीडियो तैयार रखेगा, रैम नहीं भरेगा
 
         buildSmartFeed();
 
         adapter = new ReelAdapter(feedList, prefs, this);
         viewPager.setAdapter(adapter);
 
-        // 5-टैप एडमिन पैनल (हेडर पर)
+        // Instagram Engine: स्वाइप होते ही पुरानी वीडियो का गला घोंटना (Stop Audio) और नई को प्ले करना
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            private int previousPosition = -1;
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+
+                // 1. पुरानी वीडियो को तुरंत रोको
+                if (previousPosition != -1 && previousPosition != position) {
+                    pauseVideoAt(previousPosition);
+                }
+
+                // 2. नई वीडियो को तुरंत 0.1 सेकंड में चालू करो
+                playVideoAt(position);
+                previousPosition = position;
+            }
+        });
+
+        // 5-टैप एडमिन
         TextView tvTitle = findViewById(R.id.tvHeaderTitle);
         if (tvTitle != null) {
             tvTitle.setOnClickListener(v -> {
@@ -79,6 +96,37 @@ public class ReelsActivity extends AppCompatActivity {
                     handleAdminAccess();
                 }
             });
+        }
+    }
+
+    private void pauseVideoAt(int position) {
+        View view = viewPager.findViewWithTag("reel_" + position);
+        if (view != null) {
+            WebView webView = view.findViewById(R.id.reelWebView);
+            if (webView != null) {
+                // तुरंत म्यूट और पॉज़
+                webView.evaluateJavascript("if(player){ player.pauseVideo(); player.mute(); }", null);
+            }
+        }
+    }
+
+    private void playVideoAt(int position) {
+        View view = viewPager.findViewWithTag("reel_" + position);
+        if (view != null) {
+            WebView webView = view.findViewById(R.id.reelWebView);
+            if (webView != null) {
+                // तुरंत अनम्यूट और प्ले
+                webView.evaluateJavascript("if(player){ player.unMute(); player.playVideo(); }", null);
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // ऐप बैकग्राउंड में जाने पर आवाज़ तुरंत बंद
+        if (viewPager != null) {
+            pauseVideoAt(viewPager.getCurrentItem());
         }
     }
 
@@ -97,10 +145,7 @@ public class ReelsActivity extends AppCompatActivity {
             }
         }
 
-        // ताश के पत्तों की तरह रैंडम मिक्स (हर बार अलग वीडियो आएगी)
         Collections.shuffle(rawList);
-
-        // जो कैटेगरी यूजर लाइक करेगा वो पहले आएगी
         Collections.sort(rawList, (o1, o2) -> {
             int score1 = prefs.getInt("pref_tag_" + o1.tag, 0);
             int score2 = prefs.getInt("pref_tag_" + o2.tag, 0);
@@ -133,11 +178,10 @@ public class ReelsActivity extends AppCompatActivity {
 
     private void handleAdminAccess() {
         EditText input = new EditText(this);
-        input.setHint("Link या ID:Category (उदा. 9rLYy-2l0CI:rajasthani)");
+        input.setHint("Link या ID:Category");
 
         new AlertDialog.Builder(this)
                 .setTitle("🎬 Add Reel to Feed")
-                .setMessage("नया वीडियो जोड़ें (पुरानी लिस्ट कभी डिलीट नहीं होगी):")
                 .setView(input)
                 .setPositiveButton("Add", (dialog, which) -> {
                     String str = input.getText().toString().trim();
@@ -153,7 +197,7 @@ public class ReelsActivity extends AppCompatActivity {
                     prefs.edit().putString("video_pool_data", DEFAULT_POOL).apply();
                     buildSmartFeed();
                     adapter.notifyDataSetChanged();
-                    Toast.makeText(this, "डिफ़ॉल्ट वायरल लिस्ट रीसेट हो गई!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "पूल रीसेट हो गया!", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -191,9 +235,10 @@ public class ReelsActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ReelHolder holder, int position) {
             ReelItem item = list.get(position);
+            holder.itemView.setTag("reel_" + position);
             holder.loader.setVisibility(View.VISIBLE);
 
-            // 1. LIKE
+            // LIKE
             boolean isLiked = prefs.getBoolean("liked_" + item.videoId, false);
             holder.btnLike.setText(isLiked ? "❤️" : "🤍");
             holder.btnLike.setOnClickListener(v -> {
@@ -204,13 +249,13 @@ public class ReelsActivity extends AppCompatActivity {
 
                 int tagScore = prefs.getInt("pref_tag_" + item.tag, 0);
                 prefs.edit().putInt("pref_tag_" + item.tag, newStatus ? tagScore + 2 : Math.max(0, tagScore - 2)).apply();
-                Toast.makeText(context, newStatus ? "Liked! इस कैटेगरी की रील्स अब ज़्यादा आएंगी।" : "Unliked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, newStatus ? "Liked!" : "Unliked", Toast.LENGTH_SHORT).show();
             });
 
-            // 2. COMMENT
+            // COMMENT
             holder.btnComment.setOnClickListener(v -> showCommentsDialog(item.videoId));
 
-            // 3. SHARE
+            // SHARE
             holder.btnShare.setOnClickListener(v -> {
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
@@ -218,19 +263,20 @@ public class ReelsActivity extends AppCompatActivity {
                 context.startActivity(Intent.createChooser(shareIntent, "Share Reel"));
             });
 
-            // 4. DOWNLOAD
+            // DOWNLOAD
             holder.btnDownload.setOnClickListener(v -> {
                 Toast.makeText(context, "Opening Fast Downloader...", Toast.LENGTH_SHORT).show();
                 String dlUrl = "https://en.savefrom.net/#url=https://youtube.com/shorts/" + item.videoId;
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(dlUrl)));
             });
 
-            // Webview Settings
+            // 0.1s Fast Hardware WebSettings
             WebSettings ws = holder.webView.getSettings();
             ws.setJavaScriptEnabled(true);
             ws.setDomStorageEnabled(true);
             ws.setDatabaseEnabled(true);
             ws.setMediaPlaybackRequiresUserGesture(false);
+            ws.setRenderPriority(WebSettings.RenderPriority.HIGH);
             ws.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
 
             holder.webView.setWebViewClient(new WebViewClient() {
@@ -242,22 +288,41 @@ public class ReelsActivity extends AppCompatActivity {
 
             holder.webView.setWebChromeClient(new WebChromeClient());
 
-            // बिल्कुल Clean HTML: यूट्यूब लोगो, सर्च बार, हेडर सब कुछ कट (Pure 9:16 Full Screen Reel)
-            String cleanHtml = "<!DOCTYPE html><html><head>"
+            // YouTube IFrame API Container (Zero-Logo, 0.1s Trigger, Auto-Loop)
+            String playerHtml = "<!DOCTYPE html><html><head>"
                     + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>"
                     + "<style>"
-                    + "* { margin: 0; padding: 0; box-sizing: border-box; background: #000; overflow: hidden; }"
-                    + "html, body { width: 100%; height: 100%; background: #000; }"
-                    + ".wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }"
-                    + "iframe { width: 160%; height: 135%; border: none; transform: scale(1.25); pointer-events: auto; }"
+                    + "* { margin:0; padding:0; box-sizing:border-box; background:#000; overflow:hidden; }"
+                    + "html, body { width:100%; height:100%; background:#000; }"
+                    + "#player-wrapper { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }"
+                    + "iframe { width:160%; height:135%; border:none; transform:scale(1.25); pointer-events:auto; }"
                     + "</style></head><body>"
-                    + "<div class='wrapper'>"
-                    + "<iframe src='https://www.youtube-nocookie.com/embed/" + item.videoId 
-                    + "?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1' "
-                    + "allow='autoplay; fullscreen; encrypted-media' allowfullscreen></iframe>"
-                    + "</div></body></html>";
+                    + "<div id='player-wrapper'><div id='player'></div></div>"
+                    + "<script src='https://www.youtube.com/iframe_api'></script>"
+                    + "<script>"
+                    + "var player;"
+                    + "function onYouTubeIframeAPIReady() {"
+                    + "  player = new YT.Player('player', {"
+                    + "    videoId: '" + item.videoId + "',"
+                    + "    playerVars: {"
+                    + "      'autoplay': " + (position == 0 ? "1" : "0") + ","
+                    + "      'controls': 0,"
+                    + "      'showinfo': 0,"
+                    + "      'rel': 0,"
+                    + "      'iv_load_policy': 3,"
+                    + "      'modestbranding': 1,"
+                    + "      'playsinline': 1,"
+                    + "      'loop': 1,"
+                    + "      'playlist': '" + item.videoId + "'"
+                    + "    },"
+                    + "    events: {"
+                    + "      'onReady': function(e) { if(" + position + " == 0) e.target.playVideo(); }"
+                    + "    }"
+                    + "  });"
+                    + "}"
+                    + "</script></body></html>";
 
-            holder.webView.loadDataWithBaseURL("https://www.youtube-nocookie.com", cleanHtml, "text/html", "UTF-8", null);
+            holder.webView.loadDataWithBaseURL("https://www.youtube-nocookie.com", playerHtml, "text/html", "UTF-8", null);
         }
 
         private void showCommentsDialog(String videoId) {
@@ -276,7 +341,7 @@ public class ReelsActivity extends AppCompatActivity {
             layout.addView(listView);
 
             EditText inputComment = new EditText(context);
-            inputComment.setHint("अपना कमेंट लिखें...");
+            inputComment.setHint("कमेंट लिखें...");
             layout.addView(inputComment);
 
             new AlertDialog.Builder(context)
@@ -316,4 +381,5 @@ public class ReelsActivity extends AppCompatActivity {
             btnDownload = itemView.findViewById(R.id.btnDownload);
         }
     }
-                }
+    }
+        
