@@ -45,12 +45,14 @@ public class ReelsActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.viewPagerReels);
 
+        // डिफ़ॉल्ट वीडियो लिस्ट
         String savedVideos = prefs.getString("video_ids_list", "zdLcWQUAFAk,kJQP7kiw5Fk");
         loadVideosFromString(savedVideos);
 
         adapter = new ReelAdapter(videoIds);
         viewPager.setAdapter(adapter);
 
+        // हेडर पर 5 बार क्लिक करने पर सीक्रेट एडमिन कंट्रोलर
         TextView tvTitle = findViewById(R.id.tvHeaderTitle);
         if (tvTitle != null) {
             tvTitle.setOnClickListener(v -> {
@@ -161,8 +163,9 @@ public class ReelsActivity extends AppCompatActivity {
             ws.setDomStorageEnabled(true);
             ws.setDatabaseEnabled(true);
             ws.setMediaPlaybackRequiresUserGesture(false);
-            // मोबाइल क्रोम जैसा User-Agent ताकि यूट्यूब ब्लॉक न करे
-            ws.setUserAgentString("Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36");
+            
+            // डेस्कटॉप क्रोम हेडर ताकि यूट्यूब मोबाइल रिस्ट्रिक्शन और Error 152 न लगाए
+            ws.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
 
             holder.webView.setWebViewClient(new WebViewClient() {
                 @Override
@@ -173,15 +176,23 @@ public class ReelsActivity extends AppCompatActivity {
 
             holder.webView.setWebChromeClient(new WebChromeClient());
 
-            // HTML5 डायरेक्ट एम्बेड कोड
-            String html = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                    + "<style>body{margin:0;background-color:#000;display:flex;align-items:center;justify-content:center;height:100%;overflow:hidden;} "
-                    + "iframe{width:100%;height:100%;border:none;}</style></head><body>"
-                    + "<iframe src='https://www.youtube.com/embed/" + videoId + "?autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1' "
-                    + "allow='autoplay; fullscreen' allowfullscreen></iframe>"
-                    + "</body></html>";
+            // HTML5 प्लेयर: लोगो/चैनल नेम को स्क्रीन बॉर्डर के बाहर 22% क्रॉप कर दिया गया है
+            String cleanHtml = "<!DOCTYPE html><html><head>"
+                    + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>"
+                    + "<style>"
+                    + "* { margin: 0; padding: 0; box-sizing: border-box; background: #000; overflow: hidden; }"
+                    + "html, body { width: 100%; height: 100%; background: #000; }"
+                    + ".wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }"
+                    + "iframe { width: 150%; height: 135%; border: none; transform: scale(1.22); pointer-events: auto; }"
+                    + "</style></head><body>"
+                    + "<div class='wrapper'>"
+                    + "<iframe src='https://www.youtube-nocookie.com/embed/" + videoId 
+                    + "?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1&origin=https://www.youtube-nocookie.com' "
+                    + "allow='autoplay; fullscreen; encrypted-media' allowfullscreen></iframe>"
+                    + "</div></body></html>";
 
-            holder.webView.loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "UTF-8", null);
+            // youtube-nocookie ओरिजिन के साथ लोड
+            holder.webView.loadDataWithBaseURL("https://www.youtube-nocookie.com", cleanHtml, "text/html", "UTF-8", null);
         }
 
         @Override
