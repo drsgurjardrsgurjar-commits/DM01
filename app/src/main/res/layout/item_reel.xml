@@ -4,116 +4,120 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!-- फुल स्क्रीन वीडियो -->
+    <!-- 9:16 फुल स्क्रीन वीडियो -->
     <WebView
         android:id="@+id/reelWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- लोडर -->
-    <ProgressBar
-        android:id="@+id/reelLoader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:indeterminateTint="#FF0055" />
-
-    <!-- Instagram स्टाइल राइट साइड एक्शन बार -->
+    <!-- नीचे क्रिएटर की जानकारी और कैप्शन (Instagram Style) -->
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/sideActionButtons"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/tvReelCreator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="@desi_reels"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvReelCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="वायरल रील धमाका 🔥"
+            android:textColor="#EEEEEE"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvReelMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="🎵 Original Sound"
+            android:textColor="#DDDDDD"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- दाएँ हाथ पर Instagram जैसे एक्शन बटन्स -->
+    <LinearLayout
+        android:id="@+id/sideActionButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="12dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="24dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <!-- 1. Like बटन -->
+        <!-- Like -->
         <TextView
             android:id="@+id/btnLike"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:drawable/btn_default"
-            android:backgroundTint="#33000000"
-            android:gravity="center"
-            android:text="🤍"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/tvLikeCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="14dp"
-            android:text="Like"
-            android:textColor="#FFFFFF"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:padding="6dp"
+            android:text="🤍"
+            android:textSize="26sp" />
 
-        <!-- 2. Comment बटन -->
+        <!-- Comment -->
         <TextView
             android:id="@+id/btnComment"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:drawable/btn_default"
-            android:backgroundTint="#33000000"
-            android:gravity="center"
-            android:text="💬"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/tvCommentCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="14dp"
-            android:text="Comment"
-            android:textColor="#FFFFFF"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="12dp"
+            android:padding="6dp"
+            android:text="💬"
+            android:textSize="24sp" />
 
-        <!-- 3. Share बटन -->
+        <!-- Share -->
         <TextView
             android:id="@+id/btnShare"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:drawable/btn_default"
-            android:backgroundTint="#33000000"
-            android:gravity="center"
-            android:text="🚀"
-            android:textSize="20sp" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="14dp"
-            android:text="Share"
-            android:textColor="#FFFFFF"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="12dp"
+            android:padding="6dp"
+            android:text="✈️"
+            android:textSize="24sp" />
 
-        <!-- 4. Download बटन -->
+        <!-- Download -->
         <TextView
             android:id="@+id/btnDownload"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:drawable/btn_default"
-            android:backgroundTint="#33000000"
-            android:gravity="center"
-            android:text="⬇️"
-            android:textSize="20sp" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="Save"
-            android:textColor="#FFFFFF"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
+            android:layout_marginTop="12dp"
+            android:padding="6dp"
+            android:text="⬇️"
+            android:textSize="22sp" />
     </LinearLayout>
+
+    <!-- चकरी (छिपी हुई) -->
+    <ProgressBar
+        android:id="@+id/reelLoader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
 </RelativeLayout>
