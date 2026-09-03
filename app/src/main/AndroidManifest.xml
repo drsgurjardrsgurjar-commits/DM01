@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- इंटरनेट और नेटवर्क परमिशन (इसके बिना WebView क्रैश हो जाता है) -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@android:drawable/sym_def_app_icon"
         android:label="Desi SuperApp"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
 
-        <!-- मुख्य स्क्रीन (Home/Dashboard) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -24,7 +20,6 @@
             </intent-filter>
         </activity>
 
-        <!-- रील्स स्क्रीन -->
         <activity
             android:name=".ReelsActivity"
             android:exported="false"
