@@ -1,18 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000">
 
+    <!-- बैकग्राउंड में वीडियो प्लेयर -->
     <WebView
         android:id="@+id/reelWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- लोडिंग इंडिकेटर -->
     <ProgressBar
         android:id="@+id/reelLoader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_centerInParent="true"
+        android:indeterminateTint="#FF0055" />
 
-</FrameLayout>
+    <!-- राइट साइड सोशल एक्शन बार (Like / Interaction) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="90dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- दिल / Like बटन -->
+        <TextView
+            android:id="@+id/btnLike"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:drawable/btn_default"
+            android:backgroundTint="#44000000"
+            android:gravity="center"
+            android:text="🤍"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tvLikeCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Like"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</RelativeLayout>
