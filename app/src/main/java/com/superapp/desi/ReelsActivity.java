@@ -1,4 +1,4 @@
-package com.superapp.desi;
+        package com.superapp.desi;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -65,44 +65,41 @@ public class ReelsActivity extends AppCompatActivity {
         videoIds.clear();
         String[] arr = rawData.split(",");
         for (String id : arr) {
-            if (!id.trim().isEmpty()) {
-                videoIds.add(id.trim());
+            String clean = id.trim();
+            if (!clean.isEmpty()) {
+                videoIds.add(clean);
             }
         }
     }
 
     private void handleAdminAccess() {
         String savedPin = prefs.getString("custom_admin_pin", "");
-        if (savedPin.isEmpty()) {
-            EditText newPinInput = new EditText(this);
-            newPinInput.setHint("नया 4 अंकों का पिन बनाएँ");
-            newPinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        EditText pinInput = new EditText(this);
+        pinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
 
+        if (savedPin.isEmpty()) {
+            pinInput.setHint("नया 4 अंकों का पिन बनाएँ");
             new AlertDialog.Builder(this)
-                    .setTitle("🔑 अपना सीक्रेट पिन सेट करें")
-                    .setMessage("यह सिर्फ़ पहली बार सेट करना होगा:")
-                    .setView(newPinInput)
-                    .setPositiveButton("Save PIN", (dialog, which) -> {
-                        String pin = newPinInput.getText().toString().trim();
+                    .setTitle("🔑 पिन सेट करें")
+                    .setView(pinInput)
+                    .setPositiveButton("Save", (d, w) -> {
+                        String pin = pinInput.getText().toString().trim();
                         if (pin.length() >= 4) {
                             prefs.edit().putString("custom_admin_pin", pin).apply();
-                            Toast.makeText(this, "पिन सेव हो गया! अब दोबारा 5 बार टैप करें।", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, "पिन सेट हो गया! अब दोबारा 5 बार दबाएँ।", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(this, "कम से कम 4 अंक डालें!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "कम से कम 4 अंक डालें", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
         } else {
-            EditText verifyPinInput = new EditText(this);
-            verifyPinInput.setHint("अपना पिन डालें");
-            verifyPinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-
+            pinInput.setHint("पिन डालें");
             new AlertDialog.Builder(this)
-                    .setTitle("🔒 Host Secret Access")
-                    .setView(verifyPinInput)
-                    .setPositiveButton("Login", (dialog, which) -> {
-                        if (verifyPinInput.getText().toString().trim().equals(savedPin)) {
+                    .setTitle("🔒 Host Access")
+                    .setView(pinInput)
+                    .setPositiveButton("Login", (d, w) -> {
+                        if (pinInput.getText().toString().trim().equals(savedPin)) {
                             showVideoManagementDialog();
                         } else {
                             Toast.makeText(this, "गलत पिन!", Toast.LENGTH_SHORT).show();
@@ -115,19 +112,18 @@ public class ReelsActivity extends AppCompatActivity {
 
     private void showVideoManagementDialog() {
         EditText inputVideos = new EditText(this);
-        inputVideos.setHint("Video IDs (कॉमा लगाकर, जैसे: id1,id2,id3)");
         inputVideos.setText(prefs.getString("video_ids_list", ""));
+        inputVideos.setHint("Video IDs (कॉमा लगाकर)");
 
         new AlertDialog.Builder(this)
                 .setTitle("🎬 Reels Controller")
-                .setMessage("YouTube Video / Short ID यहाँ कॉमा लगाकर सेव करें:")
                 .setView(inputVideos)
-                .setPositiveButton("Save All", (dialog, which) -> {
+                .setPositiveButton("Save All", (d, w) -> {
                     String data = inputVideos.getText().toString().trim();
                     prefs.edit().putString("video_ids_list", data).apply();
                     loadVideosFromString(data);
                     adapter.notifyDataSetChanged();
-                    Toast.makeText(this, "रील्स तुरंत अपडेट हो गईं!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "अपडेट हो गया!", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -205,4 +201,4 @@ public class ReelsActivity extends AppCompatActivity {
             loader = itemView.findViewById(R.id.reelLoader);
         }
     }
-            }                    
+                    }
