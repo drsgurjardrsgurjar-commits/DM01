@@ -1,35 +1,49 @@
 package com.superapp.desi;
 
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ViewPager2 viewPager;
-    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewPager = findViewById(R.id.viewPagerReels);
-        bottomNav = findViewById(R.id.bottomNavigationView);
+        GridView gridView = findViewById(R.id.toolsGrid);
 
-        List<String> videoIds = new ArrayList<>();
-        videoIds.add("dQw4w9WgXcQ");
-        videoIds.add("kJQP7kiw5Fk");
-        videoIds.add("fJ9rUzIMcZQ");
+        // 69 फीचर्स की पूरी लिस्ट
+        ArrayList<String> features = new ArrayList<>();
+        features.add("1. Desi Reels");
+        features.add("2. Cinema Movies");
+        features.add("3. AI Shayari & Video");
+        features.add("4. Photo Restoration");
+        features.add("5. Logo Maker");
+        features.add("6. Status Saver");
+        features.add("7. Video Downloader");
+        features.add("8. Background Remover");
+        features.add("9. Voice Dubber");
+        features.add("10. Green Screen FX");
 
-        ReelsAdapter adapter = new ReelsAdapter(this, videoIds);
-        viewPager.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
-        viewPager.setAdapter(adapter);
+        for (int i = 11; i <= 69; i++) {
+            features.add(i + ". Super Tool " + i);
+        }
 
-        bottomNav.setOnItemSelectedListener(item -> true);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+            this,
+            android.R.layout.simple_list_item_1,
+            features
+        );
+
+        gridView.setAdapter(adapter);
+
+        gridView.setOnItemClickListener((parent, view, position, id) -> {
+            String selected = features.get(position);
+            Toast.makeText(MainActivity.this, selected + " खोला जा रहा है...", Toast.LENGTH_SHORT).show();
+        });
     }
-                     }
-                                            
+}
