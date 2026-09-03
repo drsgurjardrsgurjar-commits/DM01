@@ -3,7 +3,9 @@ package com.superapp.desi;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +14,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,15 +26,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ReelsActivity extends AppCompatActivity {
 
     private int secretClickCount = 0;
-    private final List<String> videoIds = new ArrayList<>();
+    private final List<ReelItem> feedList = new ArrayList<>();
     private ReelAdapter adapter;
     private ViewPager2 viewPager;
     private SharedPreferences prefs;
+
+    private static final String DEFAULT_POOL = "zdLcWQUAFAk:funny,5K2V78BtaPc:action,kJQP7kiw5Fk:music";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +53,12 @@ public class ReelsActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.viewPagerReels);
 
-        // डिफ़ॉल्ट वीडियो लिस्ट
-        String savedVideos = prefs.getString("video_ids_list", "zdLcWQUAFAk,kJQP7kiw5Fk");
-        loadVideosFromString(savedVideos);
+        buildSmartFeed();
 
-        adapter = new ReelAdapter(videoIds);
+        adapter = new ReelAdapter(feedList, prefs, this);
         viewPager.setAdapter(adapter);
 
-        // हेडर पर 5 बार क्लिक करने पर सीक्रेट एडमिन कंट्रोलर
+        // 5-टैप एडमिन पैनल
         TextView tvTitle = findViewById(R.id.tvHeaderTitle);
         if (tvTitle != null) {
             tvTitle.setOnClickListener(v -> {
@@ -65,84 +71,102 @@ public class ReelsActivity extends AppCompatActivity {
         }
     }
 
-    private void loadVideosFromString(String rawData) {
-        videoIds.clear();
-        String[] arr = rawData.split(",");
-        for (String id : arr) {
-            String clean = id.trim();
-            if (!clean.isEmpty()) {
-                videoIds.add(clean);
+    private void buildSmartFeed() {
+        feedList.clear();
+        String rawData = prefs.getString("video_pool_data", DEFAULT_POOL);
+        String[] entries = rawData.split(",");
+
+        List<ReelItem> rawList = new ArrayList<>();
+        for (String entry : entries) {
+            String[] parts = entry.trim().split(":");
+            String id = extractVideoId(parts[0]);
+            String tag = parts.length > 1 ? parts[1] : "general";
+            if (!id.isEmpty()) {
+                rawList.add(new ReelItem(id, tag));
             }
         }
+
+        // हर बार ऐप खुलने पर रैंडम शफल
+        Collections.shuffle(rawList);
+
+        // यूजर की पसंद (लाइक) के हिसाब से प्राथमिकता
+        Collections.sort(rawList, (o1, o2) -> {
+            int score1 = prefs.getInt("pref_tag_" + o1.tag, 0);
+            int score2 = prefs.getInt("pref_tag_" + o2.tag, 0);
+            return Integer.compare(score2, score1);
+        });
+
+        feedList.addAll(rawList);
+    }
+
+    private String extractVideoId(String input) {
+        String trimmed = input.trim();
+        if (trimmed.contains("shorts/")) {
+            String[] parts = trimmed.split("shorts/");
+            if (parts.length > 1) {
+                String sub = parts[1];
+                int q = sub.indexOf('?');
+                return (q != -1) ? sub.substring(0, q) : sub;
+            }
+        } else if (trimmed.contains("v=")) {
+            String[] parts = trimmed.split("v=");
+            if (parts.length > 1) {
+                String sub = parts[1];
+                int amp = sub.indexOf('&');
+                return (amp != -1) ? sub.substring(0, amp) : sub;
+            }
+        }
+        int q = trimmed.indexOf('?');
+        return (q != -1) ? trimmed.substring(0, q) : trimmed;
     }
 
     private void handleAdminAccess() {
-        String savedPin = prefs.getString("custom_admin_pin", "");
-        EditText pinInput = new EditText(this);
-        pinInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-
-        if (savedPin.isEmpty()) {
-            pinInput.setHint("नया 4 अंकों का पिन बनाएँ");
-            new AlertDialog.Builder(this)
-                    .setTitle("🔑 पिन सेट करें")
-                    .setView(pinInput)
-                    .setPositiveButton("Save PIN", (dialog, which) -> {
-                        String pin = pinInput.getText().toString().trim();
-                        if (pin.length() >= 4) {
-                            prefs.edit().putString("custom_admin_pin", pin).apply();
-                            Toast.makeText(this, "पिन सेट हो गया! अब दोबारा 5 बार टैप करें।", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(this, "कम से कम 4 अंक डालें!", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        } else {
-            pinInput.setHint("अपना पिन डालें");
-            new AlertDialog.Builder(this)
-                    .setTitle("🔒 Host Secret Access")
-                    .setView(pinInput)
-                    .setPositiveButton("Login", (dialog, which) -> {
-                        if (pinInput.getText().toString().trim().equals(savedPin)) {
-                            showVideoManagementDialog();
-                        } else {
-                            Toast.makeText(this, "गलत पिन!", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        }
-    }
-
-    private void showVideoManagementDialog() {
-        EditText inputVideos = new EditText(this);
-        inputVideos.setHint("Video IDs (कॉमा लगाकर)");
-        inputVideos.setText(prefs.getString("video_ids_list", ""));
+        EditText input = new EditText(this);
+        input.setHint("Link या ID:Category (जैसे 5K2V78BtaPc:funny)");
 
         new AlertDialog.Builder(this)
-                .setTitle("🎬 Reels Controller")
-                .setMessage("YouTube Video / Short ID यहाँ कॉमा लगाकर सेव करें:")
-                .setView(inputVideos)
-                .setPositiveButton("Save All", (dialog, which) -> {
-                    String data = inputVideos.getText().toString().trim();
-                    prefs.edit().putString("video_ids_list", data).apply();
-                    loadVideosFromString(data);
-                    
-                    // तुरंत नया डेटा रीलोड करना
-                    adapter = new ReelAdapter(videoIds);
-                    viewPager.setAdapter(adapter);
-
-                    Toast.makeText(this, "रील्स तुरंत अपडेट हो गईं!", Toast.LENGTH_SHORT).show();
+                .setTitle("🎬 Add Reel to AI Pool")
+                .setMessage("नया वीडियो जोड़ें। फॉर्मेट: Link:category")
+                .setView(input)
+                .setPositiveButton("Add", (dialog, which) -> {
+                    String str = input.getText().toString().trim();
+                    if (!str.isEmpty()) {
+                        String oldPool = prefs.getString("video_pool_data", DEFAULT_POOL);
+                        prefs.edit().putString("video_pool_data", oldPool + "," + str).apply();
+                        buildSmartFeed();
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(this, "नया वीडियो पूल में जुड़ गया!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNeutralButton("Reset Pool", (dialog, which) -> {
+                    prefs.edit().putString("video_pool_data", DEFAULT_POOL).apply();
+                    buildSmartFeed();
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(this, "पूल रीसेट हो गया!", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    static class ReelAdapter extends RecyclerView.Adapter<ReelHolder> {
-        private final List<String> list;
+    static class ReelItem {
+        String videoId;
+        String tag;
 
-        ReelAdapter(List<String> list) {
+        ReelItem(String videoId, String tag) {
+            this.videoId = videoId;
+            this.tag = tag;
+        }
+    }
+
+    static class ReelAdapter extends RecyclerView.Adapter<ReelHolder> {
+        private final List<ReelItem> list;
+        private final SharedPreferences prefs;
+        private final Context context;
+
+        ReelAdapter(List<ReelItem> list, SharedPreferences prefs, Context context) {
             this.list = list;
+            this.prefs = prefs;
+            this.context = context;
         }
 
         @NonNull
@@ -155,16 +179,51 @@ public class ReelsActivity extends AppCompatActivity {
         @SuppressLint("SetJavaScriptEnabled")
         @Override
         public void onBindViewHolder(@NonNull ReelHolder holder, int position) {
-            String videoId = list.get(position);
+            ReelItem item = list.get(position);
             holder.loader.setVisibility(View.VISIBLE);
 
+            // 1. LIKE ENGINE
+            boolean isLiked = prefs.getBoolean("liked_" + item.videoId, false);
+            holder.btnLike.setText(isLiked ? "❤️" : "🤍");
+            holder.btnLike.setOnClickListener(v -> {
+                boolean currentLiked = prefs.getBoolean("liked_" + item.videoId, false);
+                boolean newStatus = !currentLiked;
+                prefs.edit().putBoolean("liked_" + item.videoId, newStatus).apply();
+                holder.btnLike.setText(newStatus ? "❤️" : "🤍");
+
+                int tagScore = prefs.getInt("pref_tag_" + item.tag, 0);
+                prefs.edit().putInt("pref_tag_" + item.tag, newStatus ? tagScore + 2 : Math.max(0, tagScore - 2)).apply();
+                Toast.makeText(context, newStatus ? "Liked! इस तरह की वीडियो अब ज़्यादा दिखेंगी।" : "Unliked", Toast.LENGTH_SHORT).show();
+            });
+
+            // 2. COMMENT SYSTEM (Dialog + Saved Comments)
+            holder.btnComment.setOnClickListener(v -> showCommentsDialog(item.videoId));
+
+            // 3. SHARE SYSTEM (WhatsApp / Instagram / Apps)
+            holder.btnShare.setOnClickListener(v -> {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                String shareBody = "ये रील देखो Desi SuperApp पर: https://youtube.com/shorts/" + item.videoId;
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Desi Reels");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                context.startActivity(Intent.createChooser(shareIntent, "Share Reel via"));
+            });
+
+            // 4. DOWNLOAD SYSTEM
+            holder.btnDownload.setOnClickListener(v -> {
+                Toast.makeText(context, "डाउनलोडिंग शुरू हो रही है...", Toast.LENGTH_SHORT).show();
+                // डाउनलोड इंजन / वेब डाउनलोडर पर रीडायरेक्ट
+                String dlUrl = "https://en.savefrom.net/#url=https://youtube.com/shorts/" + item.videoId;
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(dlUrl));
+                context.startActivity(browserIntent);
+            });
+
+            // Webview Player
             WebSettings ws = holder.webView.getSettings();
             ws.setJavaScriptEnabled(true);
             ws.setDomStorageEnabled(true);
             ws.setDatabaseEnabled(true);
             ws.setMediaPlaybackRequiresUserGesture(false);
-            
-            // डेस्कटॉप क्रोम हेडर ताकि यूट्यूब मोबाइल रिस्ट्रिक्शन और Error 152 न लगाए
             ws.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
 
             holder.webView.setWebViewClient(new WebViewClient() {
@@ -176,7 +235,6 @@ public class ReelsActivity extends AppCompatActivity {
 
             holder.webView.setWebChromeClient(new WebChromeClient());
 
-            // HTML5 प्लेयर: लोगो/चैनल नेम को स्क्रीन बॉर्डर के बाहर 22% क्रॉप कर दिया गया है
             String cleanHtml = "<!DOCTYPE html><html><head>"
                     + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>"
                     + "<style>"
@@ -186,13 +244,48 @@ public class ReelsActivity extends AppCompatActivity {
                     + "iframe { width: 150%; height: 135%; border: none; transform: scale(1.22); pointer-events: auto; }"
                     + "</style></head><body>"
                     + "<div class='wrapper'>"
-                    + "<iframe src='https://www.youtube-nocookie.com/embed/" + videoId 
+                    + "<iframe src='https://www.youtube-nocookie.com/embed/" + item.videoId 
                     + "?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1&origin=https://www.youtube-nocookie.com' "
                     + "allow='autoplay; fullscreen; encrypted-media' allowfullscreen></iframe>"
                     + "</div></body></html>";
 
-            // youtube-nocookie ओरिजिन के साथ लोड
             holder.webView.loadDataWithBaseURL("https://www.youtube-nocookie.com", cleanHtml, "text/html", "UTF-8", null);
+        }
+
+        private void showCommentsDialog(String videoId) {
+            LinearLayout layout = new LinearLayout(context);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.setPadding(30, 20, 30, 10);
+
+            // पुराने कमेंट्स लोड करना
+            String savedComments = prefs.getString("comments_" + videoId, "पहला कमेंट करें!");
+            String[] commentArr = savedComments.split("###");
+            List<String> commentList = new ArrayList<>();
+            Collections.addAll(commentList, commentArr);
+
+            ListView listView = new ListView(context);
+            ArrayAdapter<String> commentAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, commentList);
+            listView.setAdapter(commentAdapter);
+            layout.addView(listView);
+
+            EditText inputComment = new EditText(context);
+            inputComment.setHint("अपना कमेंट लिखें...");
+            layout.addView(inputComment);
+
+            new AlertDialog.Builder(context)
+                    .setTitle("💬 Comments")
+                    .setView(layout)
+                    .setPositiveButton("Post", (dialog, which) -> {
+                        String newC = inputComment.getText().toString().trim();
+                        if (!newC.isEmpty()) {
+                            String existing = prefs.getString("comments_" + videoId, "");
+                            String updated = existing.isEmpty() ? newC : existing + "###" + newC;
+                            prefs.edit().putString("comments_" + videoId, updated).apply();
+                            Toast.makeText(context, "कमेंट पोस्ट हो गया!", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Close", null)
+                    .show();
         }
 
         @Override
@@ -204,11 +297,17 @@ public class ReelsActivity extends AppCompatActivity {
     static class ReelHolder extends RecyclerView.ViewHolder {
         WebView webView;
         ProgressBar loader;
+        TextView btnLike, btnComment, btnShare, btnDownload;
 
         ReelHolder(@NonNull View itemView) {
             super(itemView);
             webView = itemView.findViewById(R.id.reelWebView);
             loader = itemView.findViewById(R.id.reelLoader);
+            btnLike = itemView.findViewById(R.id.btnLike);
+            btnComment = itemView.findViewById(R.id.btnComment);
+            btnShare = itemView.findViewById(R.id.btnShare);
+            btnDownload = itemView.findViewById(R.id.btnDownload);
         }
     }
-                }
+                    }
+                                
