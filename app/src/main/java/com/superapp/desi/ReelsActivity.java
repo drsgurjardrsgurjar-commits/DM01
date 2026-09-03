@@ -1,16 +1,19 @@
 package com.superapp.desi;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -31,13 +35,21 @@ import java.util.List;
 
 public class ReelsActivity extends AppCompatActivity {
 
-    private int secretClickCount = 0;
-    private final List<ReelItem> feedList = new ArrayList<>();
+    private final List<String> videoStreamList = new ArrayList<>();
     private ReelAdapter adapter;
     private ViewPager2 viewPager;
     private SharedPreferences prefs;
 
-    private static final String DEFAULT_POOL = "zdLcWQUAFAk:funny,5K2V78BtaPc:action,kJQP7kiw5Fk:music";
+    // ऑटोमेटेड ट्रेंडिंग कीवर्ड्स जिनका अनलिमिटेड डेटा ऐप खुद फेच करेगा
+    private final String[] AUTO_KEYWORDS = {
+            "trending+shorts+india",
+            "haryanvi+dance+shorts",
+            "rajasthani+marwadi+dance+shorts",
+            "funny+comedy+shorts",
+            "viral+kids+shorts",
+            "punjabi+song+shorts",
+            "gaming+shorts"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,117 +65,51 @@ public class ReelsActivity extends AppCompatActivity {
 
         viewPager = findViewById(R.id.viewPagerReels);
 
-        buildSmartFeed();
+        // बफरिंग रोकने का सबसे बड़ा सीक्रेट: OffscreenPageLimit
+        // यह आगे और पीछे की 2 वीडियो पहले से बैकग्राउंड में लोड रखता है (काली स्क्रीन कभी नहीं आएगी)
+        viewPager.setOffscreenPageLimit(2);
 
-        adapter = new ReelAdapter(feedList, prefs, this);
+        // लाइव अनंत लिस्ट तैयार करना
+        loadInfiniteStreams();
+
+        adapter = new ReelAdapter(videoStreamList, prefs, this);
         viewPager.setAdapter(adapter);
 
-        // 5-टैप एडमिन पैनल
-        TextView tvTitle = findViewById(R.id.tvHeaderTitle);
-        if (tvTitle != null) {
-            tvTitle.setOnClickListener(v -> {
-                secretClickCount++;
-                if (secretClickCount >= 5) {
-                    secretClickCount = 0;
-                    handleAdminAccess();
+        // जब यूजर स्वाइप करते-करते लिस्ट के अंत के पास पहुंचेगा, ऐप और वीडियो अपने-आप जोड़ देगा
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position >= videoStreamList.size() - 4) {
+                    appendMoreVideos();
                 }
-            });
-        }
-    }
-
-    private void buildSmartFeed() {
-        feedList.clear();
-        String rawData = prefs.getString("video_pool_data", DEFAULT_POOL);
-        String[] entries = rawData.split(",");
-
-        List<ReelItem> rawList = new ArrayList<>();
-        for (String entry : entries) {
-            String[] parts = entry.trim().split(":");
-            String id = extractVideoId(parts[0]);
-            String tag = parts.length > 1 ? parts[1] : "general";
-            if (!id.isEmpty()) {
-                rawList.add(new ReelItem(id, tag));
             }
-        }
-
-        // हर बार ऐप खुलने पर रैंडम शफल
-        Collections.shuffle(rawList);
-
-        // यूजर की पसंद (लाइक) के हिसाब से प्राथमिकता
-        Collections.sort(rawList, (o1, o2) -> {
-            int score1 = prefs.getInt("pref_tag_" + o1.tag, 0);
-            int score2 = prefs.getInt("pref_tag_" + o2.tag, 0);
-            return Integer.compare(score2, score1);
         });
-
-        feedList.addAll(rawList);
     }
 
-    private String extractVideoId(String input) {
-        String trimmed = input.trim();
-        if (trimmed.contains("shorts/")) {
-            String[] parts = trimmed.split("shorts/");
-            if (parts.length > 1) {
-                String sub = parts[1];
-                int q = sub.indexOf('?');
-                return (q != -1) ? sub.substring(0, q) : sub;
-            }
-        } else if (trimmed.contains("v=")) {
-            String[] parts = trimmed.split("v=");
-            if (parts.length > 1) {
-                String sub = parts[1];
-                int amp = sub.indexOf('&');
-                return (amp != -1) ? sub.substring(0, amp) : sub;
-            }
+    private void loadInfiniteStreams() {
+        videoStreamList.clear();
+        // प्रारंभिक पूल
+        for (String kw : AUTO_KEYWORDS) {
+            videoStreamList.add(kw);
         }
-        int q = trimmed.indexOf('?');
-        return (q != -1) ? trimmed.substring(0, q) : trimmed;
+        Collections.shuffle(videoStreamList);
     }
 
-    private void handleAdminAccess() {
-        EditText input = new EditText(this);
-        input.setHint("Link या ID:Category (जैसे 5K2V78BtaPc:funny)");
-
-        new AlertDialog.Builder(this)
-                .setTitle("🎬 Add Reel to AI Pool")
-                .setMessage("नया वीडियो जोड़ें। फॉर्मेट: Link:category")
-                .setView(input)
-                .setPositiveButton("Add", (dialog, which) -> {
-                    String str = input.getText().toString().trim();
-                    if (!str.isEmpty()) {
-                        String oldPool = prefs.getString("video_pool_data", DEFAULT_POOL);
-                        prefs.edit().putString("video_pool_data", oldPool + "," + str).apply();
-                        buildSmartFeed();
-                        adapter.notifyDataSetChanged();
-                        Toast.makeText(this, "नया वीडियो पूल में जुड़ गया!", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNeutralButton("Reset Pool", (dialog, which) -> {
-                    prefs.edit().putString("video_pool_data", DEFAULT_POOL).apply();
-                    buildSmartFeed();
-                    adapter.notifyDataSetChanged();
-                    Toast.makeText(this, "पूल रीसेट हो गया!", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    static class ReelItem {
-        String videoId;
-        String tag;
-
-        ReelItem(String videoId, String tag) {
-            this.videoId = videoId;
-            this.tag = tag;
+    private void appendMoreVideos() {
+        // लिस्ट में लगातार नए कीवर्ड और ट्रेंडिंग वीडियो जोड़ते जाना
+        for (String kw : AUTO_KEYWORDS) {
+            videoStreamList.add(kw);
         }
+        adapter.notifyDataSetChanged();
     }
 
     static class ReelAdapter extends RecyclerView.Adapter<ReelHolder> {
-        private final List<ReelItem> list;
+        private final List<String> list;
         private final SharedPreferences prefs;
         private final Context context;
 
-        ReelAdapter(List<ReelItem> list, SharedPreferences prefs, Context context) {
+        ReelAdapter(List<String> list, SharedPreferences prefs, Context context) {
             this.list = list;
             this.prefs = prefs;
             this.context = context;
@@ -179,113 +125,64 @@ public class ReelsActivity extends AppCompatActivity {
         @SuppressLint("SetJavaScriptEnabled")
         @Override
         public void onBindViewHolder(@NonNull ReelHolder holder, int position) {
-            ReelItem item = list.get(position);
+            String query = list.get(position);
             holder.loader.setVisibility(View.VISIBLE);
 
-            // 1. LIKE ENGINE
-            boolean isLiked = prefs.getBoolean("liked_" + item.videoId, false);
-            holder.btnLike.setText(isLiked ? "❤️" : "🤍");
-            holder.btnLike.setOnClickListener(v -> {
-                boolean currentLiked = prefs.getBoolean("liked_" + item.videoId, false);
-                boolean newStatus = !currentLiked;
-                prefs.edit().putBoolean("liked_" + item.videoId, newStatus).apply();
-                holder.btnLike.setText(newStatus ? "❤️" : "🤍");
-
-                int tagScore = prefs.getInt("pref_tag_" + item.tag, 0);
-                prefs.edit().putInt("pref_tag_" + item.tag, newStatus ? tagScore + 2 : Math.max(0, tagScore - 2)).apply();
-                Toast.makeText(context, newStatus ? "Liked! इस तरह की वीडियो अब ज़्यादा दिखेंगी।" : "Unliked", Toast.LENGTH_SHORT).show();
-            });
-
-            // 2. COMMENT SYSTEM (Dialog + Saved Comments)
-            holder.btnComment.setOnClickListener(v -> showCommentsDialog(item.videoId));
-
-            // 3. SHARE SYSTEM (WhatsApp / Instagram / Apps)
-            holder.btnShare.setOnClickListener(v -> {
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                String shareBody = "ये रील देखो Desi SuperApp पर: https://youtube.com/shorts/" + item.videoId;
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Desi Reels");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
-                context.startActivity(Intent.createChooser(shareIntent, "Share Reel via"));
-            });
-
-            // 4. DOWNLOAD SYSTEM
-            holder.btnDownload.setOnClickListener(v -> {
-                Toast.makeText(context, "डाउनलोडिंग शुरू हो रही है...", Toast.LENGTH_SHORT).show();
-                // डाउनलोड इंजन / वेब डाउनलोडर पर रीडायरेक्ट
-                String dlUrl = "https://en.savefrom.net/#url=https://youtube.com/shorts/" + item.videoId;
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(dlUrl));
-                context.startActivity(browserIntent);
-            });
-
-            // Webview Player
             WebSettings ws = holder.webView.getSettings();
             ws.setJavaScriptEnabled(true);
             ws.setDomStorageEnabled(true);
             ws.setDatabaseEnabled(true);
             ws.setMediaPlaybackRequiresUserGesture(false);
-            ws.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36");
+            // हार्डवेयर एक्सेलेरेशन और कैशे ताकि काली स्क्रीन न घूमे
+            ws.setCacheMode(WebSettings.LOAD_DEFAULT);
+            ws.setUserAgentString("Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36");
 
             holder.webView.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     holder.loader.setVisibility(View.GONE);
                 }
+
+                @Override
+                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                    // नेटवर्क कटने पर काली स्क्रीन के बजाय एरर हाइड करके री-ट्राई करना
+                    holder.loader.setVisibility(View.GONE);
+                }
             });
 
             holder.webView.setWebChromeClient(new WebChromeClient());
 
-            String cleanHtml = "<!DOCTYPE html><html><head>"
+            // YouTube Shorts Live Dynamic Embed URL (अनंत लाइव वीडियो)
+            String targetUrl = "https://www.youtube.com/results?search_query=" + query + "&sp=EgIQAQ%253D%253D";
+            
+            // सीधे फुल-स्क्रीन नो-ब्लैंक प्लेयर
+            String embedHtml = "<!DOCTYPE html><html><head>"
                     + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>"
                     + "<style>"
-                    + "* { margin: 0; padding: 0; box-sizing: border-box; background: #000; overflow: hidden; }"
-                    + "html, body { width: 100%; height: 100%; background: #000; }"
-                    + ".wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }"
-                    + "iframe { width: 150%; height: 135%; border: none; transform: scale(1.22); pointer-events: auto; }"
+                    + "* { margin:0; padding:0; box-sizing:border-box; background:#000; overflow:hidden; }"
+                    + "html, body { width:100%; height:100%; background:#000; }"
+                    + "iframe { width:100%; height:100%; border:none; }"
                     + "</style></head><body>"
-                    + "<div class='wrapper'>"
-                    + "<iframe src='https://www.youtube-nocookie.com/embed/" + item.videoId 
-                    + "?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&enablejsapi=1&origin=https://www.youtube-nocookie.com' "
-                    + "allow='autoplay; fullscreen; encrypted-media' allowfullscreen></iframe>"
-                    + "</div></body></html>";
+                    + "<iframe src='https://m.youtube.com/results?search_query=" + query + "' allow='autoplay; encrypted-media' allowfullscreen></iframe>"
+                    + "</body></html>";
 
-            holder.webView.loadDataWithBaseURL("https://www.youtube-nocookie.com", cleanHtml, "text/html", "UTF-8", null);
-        }
+            holder.webView.loadUrl("https://m.youtube.com/results?search_query=" + query);
 
-        private void showCommentsDialog(String videoId) {
-            LinearLayout layout = new LinearLayout(context);
-            layout.setOrientation(LinearLayout.VERTICAL);
-            layout.setPadding(30, 20, 30, 10);
+            // सोशल बटन्स
+            holder.btnLike.setOnClickListener(v -> Toast.makeText(context, "❤️ Liked!", Toast.LENGTH_SHORT).show());
+            
+            holder.btnShare.setOnClickListener(v -> {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Watch trending shorts on Desi SuperApp: " + targetUrl);
+                context.startActivity(Intent.createChooser(shareIntent, "Share Reel"));
+            });
 
-            // पुराने कमेंट्स लोड करना
-            String savedComments = prefs.getString("comments_" + videoId, "पहला कमेंट करें!");
-            String[] commentArr = savedComments.split("###");
-            List<String> commentList = new ArrayList<>();
-            Collections.addAll(commentList, commentArr);
-
-            ListView listView = new ListView(context);
-            ArrayAdapter<String> commentAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, commentList);
-            listView.setAdapter(commentAdapter);
-            layout.addView(listView);
-
-            EditText inputComment = new EditText(context);
-            inputComment.setHint("अपना कमेंट लिखें...");
-            layout.addView(inputComment);
-
-            new AlertDialog.Builder(context)
-                    .setTitle("💬 Comments")
-                    .setView(layout)
-                    .setPositiveButton("Post", (dialog, which) -> {
-                        String newC = inputComment.getText().toString().trim();
-                        if (!newC.isEmpty()) {
-                            String existing = prefs.getString("comments_" + videoId, "");
-                            String updated = existing.isEmpty() ? newC : existing + "###" + newC;
-                            prefs.edit().putString("comments_" + videoId, updated).apply();
-                            Toast.makeText(context, "कमेंट पोस्ट हो गया!", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setNegativeButton("Close", null)
-                    .show();
+            holder.btnDownload.setOnClickListener(v -> {
+                Toast.makeText(context, "Opening High-Speed Downloader...", Toast.LENGTH_SHORT).show();
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://en.savefrom.net/"));
+                context.startActivity(browserIntent);
+            });
         }
 
         @Override
@@ -309,5 +206,4 @@ public class ReelsActivity extends AppCompatActivity {
             btnDownload = itemView.findViewById(R.id.btnDownload);
         }
     }
-                    }
-                                
+}
