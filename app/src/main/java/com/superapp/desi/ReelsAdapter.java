@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
@@ -31,6 +32,11 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelsViewHol
     @Override
     public void onBindViewHolder(@NonNull ReelsViewHolder holder, int position) {
         String videoId = videoIds.get(position);
+        
+        if (context instanceof LifecycleOwner) {
+            ((LifecycleOwner) context).getLifecycle().addObserver(holder.playerView);
+        }
+
         holder.playerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
             @Override
             public void onReady(@NonNull YouTubePlayer youTubePlayer) {
@@ -52,5 +58,4 @@ public class ReelsAdapter extends RecyclerView.Adapter<ReelsAdapter.ReelsViewHol
             playerView = itemView.findViewById(R.id.youtube_player_view);
         }
     }
-          }
-
+}
