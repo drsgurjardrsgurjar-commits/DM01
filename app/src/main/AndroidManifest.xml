@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.superapp.desi">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- इंटरनेट और नेटवर्क परमिशन (इसके बिना WebView क्रैश हो जाता है) -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@android:drawable/sym_def_app_icon"
+        android:icon="@mipmap/ic_launcher"
         android:label="Desi SuperApp"
-        android:roundIcon="@android:drawable/sym_def_app_icon"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
 
+        <!-- मुख्य स्क्रीन (Home/Dashboard) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -23,10 +24,12 @@
             </intent-filter>
         </activity>
 
+        <!-- रील्स स्क्रीन -->
         <activity
             android:name=".ReelsActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize" />
 
     </application>
 
