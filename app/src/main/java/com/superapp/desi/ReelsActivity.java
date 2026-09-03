@@ -28,6 +28,7 @@ public class ReelsActivity extends AppCompatActivity {
     private int secretClickCount = 0;
     private final List<String> videoIds = new ArrayList<>();
     private ReelAdapter adapter;
+    private ViewPager2 viewPager;
     private SharedPreferences prefs;
 
     @Override
@@ -42,10 +43,11 @@ public class ReelsActivity extends AppCompatActivity {
             btnBack.setOnClickListener(v -> finish());
         }
 
-        String savedVideos = prefs.getString("video_ids_list", "kJQP7kiw5Fk,9bZkp7q19f0,3JZ_D3ELwOQ");
+        viewPager = findViewById(R.id.viewPagerReels);
+
+        String savedVideos = prefs.getString("video_ids_list", "zdLcWQUAFAk,kJQP7kiw5Fk");
         loadVideosFromString(savedVideos);
 
-        ViewPager2 viewPager = findViewById(R.id.viewPagerReels);
         adapter = new ReelAdapter(videoIds);
         viewPager.setAdapter(adapter);
 
@@ -123,7 +125,11 @@ public class ReelsActivity extends AppCompatActivity {
                     String data = inputVideos.getText().toString().trim();
                     prefs.edit().putString("video_ids_list", data).apply();
                     loadVideosFromString(data);
-                    adapter.notifyDataSetChanged();
+                    
+                    // तुरंत नया डेटा रीलोड करना
+                    adapter = new ReelAdapter(videoIds);
+                    viewPager.setAdapter(adapter);
+
                     Toast.makeText(this, "रील्स तुरंत अपडेट हो गईं!", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
@@ -153,14 +159,12 @@ public class ReelsActivity extends AppCompatActivity {
             WebSettings ws = holder.webView.getSettings();
             ws.setJavaScriptEnabled(true);
             ws.setDomStorageEnabled(true);
+            ws.setDatabaseEnabled(true);
             ws.setMediaPlaybackRequiresUserGesture(false);
+            // मोबाइल क्रोम जैसा User-Agent ताकि यूट्यूब ब्लॉक न करे
+            ws.setUserAgentString("Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36");
 
             holder.webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    return true;
-                }
-
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     holder.loader.setVisibility(View.GONE);
@@ -169,21 +173,15 @@ public class ReelsActivity extends AppCompatActivity {
 
             holder.webView.setWebChromeClient(new WebChromeClient());
 
-            String customPlayerHtml = "<!DOCTYPE html><html><head>"
-                    + "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>"
-                    + "<style>"
-                    + "* { margin: 0; padding: 0; box-sizing: border-box; background-color: #000; overflow: hidden; }"
-                    + "html, body { width: 100%; height: 100%; }"
-                    + ".container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }"
-                    + "iframe { width: 140%; height: 120%; border: none; transform: scale(1.15); }"
-                    + "</style></head><body>"
-                    + "<div class='container'>"
-                    + "<iframe src='https://www.youtube.com/embed/" + videoId 
-                    + "?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&loop=1&playlist=" + videoId + "' "
-                    + "allow='autoplay; encrypted-media' allowfullscreen></iframe>"
-                    + "</div></body></html>";
+            // HTML5 डायरेक्ट एम्बेड कोड
+            String html = "<html><head><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+                    + "<style>body{margin:0;background-color:#000;display:flex;align-items:center;justify-content:center;height:100%;overflow:hidden;} "
+                    + "iframe{width:100%;height:100%;border:none;}</style></head><body>"
+                    + "<iframe src='https://www.youtube.com/embed/" + videoId + "?autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1' "
+                    + "allow='autoplay; fullscreen' allowfullscreen></iframe>"
+                    + "</body></html>";
 
-            holder.webView.loadDataWithBaseURL("https://www.youtube.com", customPlayerHtml, "text/html", "UTF-8", null);
+            holder.webView.loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "UTF-8", null);
         }
 
         @Override
@@ -202,4 +200,4 @@ public class ReelsActivity extends AppCompatActivity {
             loader = itemView.findViewById(R.id.reelLoader);
         }
     }
-    }
+                }
