@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ReelsActivity extends AppCompatActivity {
 
-    private final String ADMIN_PIN = "1234"; // सिर्फ तुम्हारा पिन
+    private final String ADMIN_PIN = "7023";
     private int secretClickCount = 0;
     private List<String> videoIds = new ArrayList<>();
     private RecyclerView.Adapter<ReelHolder> adapter;
