@@ -3,221 +3,189 @@ package com.superapp.desi;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final List<SuperTool> fullToolList = new ArrayList<>();
-    private final List<SuperTool> displayedList = new ArrayList<>();
-    private ToolAdapter adapter;
-    private String selectedCategory = "All";
-
-    private final String[] CATEGORIES = {
-            "All", "AI Studio", "Offline Hardware", "Social Saver", "Desi Daily", "Office & PDF"
-    };
+    private View tabHomeView, tabMoviesView, tabChatView;
+    private View panicStudyScreen, secretPinPadOverlay;
+    private TextView txtNavHome, txtNavReels, txtNavMovies, txtNavChat, txtNavProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initAllTools();
+        // 1. स्क्रीन व्यूज को लिंक करना
+        tabHomeView = findViewById(R.id.tabHomeView);
+        tabMoviesView = findViewById(R.id.tabMoviesView);
+        tabChatView = findViewById(R.id.tabChatView);
+        panicStudyScreen = findViewById(R.id.panicStudyScreen);
+        secretPinPadOverlay = findViewById(R.id.secretPinPadOverlay);
 
-        setupCategoryChips();
+        txtNavHome = findViewById(R.id.txtNavHome);
+        txtNavReels = findViewById(R.id.txtNavReels);
+        txtNavMovies = findViewById(R.id.txtNavMovies);
+        txtNavChat = findViewById(R.id.txtNavChat);
+        txtNavProfile = findViewById(R.id.txtNavProfile);
 
-        RecyclerView rv = findViewById(R.id.rvToolsGrid);
-        rv.setLayoutManager(new GridLayoutManager(this, 2)); // 2-Column Responsive Grid
-        adapter = new ToolAdapter(displayedList, this::onToolClicked);
-        rv.setAdapter(adapter);
+        // 2. सारे फीचर्स चालू करना
+        setupAstraXNavigation();
+        setupAstraXBoxes();
+        setupPanicAndSecretVault();
+    }
 
-        // लाइव सर्च फ़िल्टर
-        EditText etSearch = findViewById(R.id.etSearchTools);
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    // --- 5 बॉटम टैब्स का कंट्रोल ---
+    private void setupAstraXNavigation() {
+        // 1. Home टैब
+        findViewById(R.id.navHome).setOnClickListener(v -> switchTab("HOME"));
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterTools(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+        // 2. Reels टैब (सीधे 9:16 रील्स प्लेयर खुलेगा)
+        findViewById(R.id.navReels).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ReelsActivity.class);
+            startActivity(intent);
         });
 
-        filterTools("");
+        // 3. Movies टैब (KGF-2 पोस्टर और मूवी स्क्रीन)
+        findViewById(R.id.navMovies).setOnClickListener(v -> switchTab("MOVIES"));
+
+        // 4. Chat टैब (कम्युनिटी व चैट स्क्रीन)
+        findViewById(R.id.navChat).setOnClickListener(v -> switchTab("CHAT"));
+
+        // 5. Profile टैब
+        findViewById(R.id.navProfile).setOnClickListener(v -> {
+            Toast.makeText(this, "Profile: Logged in as AstraX User 🌟", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void setupCategoryChips() {
-        LinearLayout chipGroup = findViewById(R.id.chipGroupCategories);
-        chipGroup.removeAllViews();
+    // --- स्क्रीन बदलने का लॉजिक ---
+    private void switchTab(String tab) {
+        tabHomeView.setVisibility(View.GONE);
+        tabMoviesView.setVisibility(View.GONE);
+        tabChatView.setVisibility(View.GONE);
+        secretPinPadOverlay.setVisibility(View.GONE);
 
-        for (String cat : CATEGORIES) {
-            TextView chip = new TextView(this);
-            chip.setText(cat);
-            chip.setTextSize(13);
-            chip.setPadding(30, 14, 30, 14);
-            chip.setTextColor(cat.equals(selectedCategory) ? Color.WHITE : Color.parseColor("#88889D"));
-            chip.setBackgroundColor(cat.equals(selectedCategory) ? Color.parseColor("#FF0055") : Color.parseColor("#1B1C26"));
+        // टैब के रंग रीसेट करना
+        txtNavHome.setTextColor(Color.parseColor("#8E92B2"));
+        txtNavReels.setTextColor(Color.parseColor("#8E92B2"));
+        txtNavMovies.setTextColor(Color.parseColor("#8E92B2"));
+        txtNavChat.setTextColor(Color.parseColor("#8E92B2"));
+        txtNavProfile.setTextColor(Color.parseColor("#8E92B2"));
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, 0, 16, 0);
-            chip.setLayoutParams(params);
-
-            chip.setOnClickListener(v -> {
-                selectedCategory = cat;
-                setupCategoryChips(); // रिफ्रेश स्टाइल
-                EditText etSearch = findViewById(R.id.etSearchTools);
-                filterTools(etSearch.getText().toString());
-            });
-
-            chipGroup.addView(chip);
-        }
-    }
-
-    private void filterTools(String query) {
-        displayedList.clear();
-        String q = query.toLowerCase().trim();
-
-        for (SuperTool tool : fullToolList) {
-            boolean matchesCat = selectedCategory.equals("All") || tool.category.equalsIgnoreCase(selectedCategory);
-            boolean matchesQuery = q.isEmpty() || tool.name.toLowerCase().contains(q) || tool.desc.toLowerCase().contains(q);
-
-            if (matchesCat && matchesQuery) {
-                displayedList.add(tool);
-            }
-        }
-        adapter.notifyDataSetChanged();
-    }
-
-    private void onToolClicked(SuperTool tool) {
-        Toast.makeText(this, "Launching: " + tool.name, Toast.LENGTH_SHORT).show();
-        // यहाँ से Action Type के आधार पर Native Hardware या AI Studio खुलेगा
-    }
-
-    private void initAllTools() {
-        fullToolList.clear();
-
-        // 1. AI STUDIO
-        fullToolList.add(new SuperTool("AI BG Remover", "✂️", "AI Studio", "1-Tap Background Cut", "AI", "ACTION_AI_BG"));
-        fullToolList.add(new SuperTool("AI Vocal Separator", "🎤", "AI Studio", "Remove vocals from songs", "AI", "ACTION_AI_VOCAL"));
-        fullToolList.add(new SuperTool("AI Photo Restorer", "🖼️", "AI Studio", "Fix old damaged photos", "AI", "ACTION_AI_RESTORE"));
-        fullToolList.add(new SuperTool("AI Voice Clone", "🗣️", "AI Studio", "Transform voices instantly", "AI", "ACTION_AI_VOICE"));
-        fullToolList.add(new SuperTool("AI Resume Builder", "📄", "AI Studio", "Create CV in 2 minutes", "AI", "ACTION_AI_RESUME"));
-        fullToolList.add(new SuperTool("AI Video Dubber", "🌐", "AI Studio", "Translate video languages", "AI", "ACTION_AI_DUB"));
-
-        // 2. OFFLINE HARDWARE (100% Zero Internet)
-        fullToolList.add(new SuperTool("Speaker Cleaner", "🔊", "Offline Hardware", "165Hz Water & Dust Ejector", "OFFLINE", "ACTION_SPEAKER"));
-        fullToolList.add(new SuperTool("Pocket Grab Alarm", "🚨", "Offline Hardware", "Anti-theft pocket siren", "OFFLINE", "ACTION_THEFT"));
-        fullToolList.add(new SuperTool("Stud & Wire Finder", "🧲", "Offline Hardware", "Detects hidden wall wires", "OFFLINE", "ACTION_EMF"));
-        fullToolList.add(new SuperTool("Mosquito Repeller", "🦟", "Offline Hardware", "Ultrasonic sound waves", "OFFLINE", "ACTION_MOSQUITO"));
-        fullToolList.add(new SuperTool("Clap Phone Finder", "👏", "Offline Hardware", "Clap to flash and ring", "OFFLINE", "ACTION_CLAP"));
-        fullToolList.add(new SuperTool("Hidden Cam Detector", "👁️", "Offline Hardware", "Finds hidden lens reflection", "OFFLINE", "ACTION_CAM_DETECTOR"));
-        fullToolList.add(new SuperTool("Ghost Walkie-Talkie", "📻", "Offline Hardware", "100m Offline Voice Chat", "OFFLINE", "ACTION_WALKIE"));
-        fullToolList.add(new SuperTool("Door Trap Alarm", "🚪", "Offline Hardware", "Motion-sensing room guard", "OFFLINE", "ACTION_TRAP"));
-        fullToolList.add(new SuperTool("Spirit Surface Level", "📐", "Offline Hardware", "0.1° Surface alignment", "OFFLINE", "ACTION_LEVEL"));
-        fullToolList.add(new SuperTool("Heart Pulse Checker", "❤️", "Offline Hardware", "Camera BPM pulse monitor", "OFFLINE", "ACTION_PULSE"));
-
-        // 3. SOCIAL SAVER
-        fullToolList.add(new SuperTool("Insta Reel Downloader", "📸", "Social Saver", "No watermark instant save", "FAST", "ACTION_INSTA"));
-        fullToolList.add(new SuperTool("WhatsApp Status Saver", "🟢", "Social Saver", "Save photos & videos", "TOOL", "ACTION_WA_STATUS"));
-        fullToolList.add(new SuperTool("Audio/MP3 Extractor", "🎵", "Social Saver", "Extract audio from video", "FAST", "ACTION_EXTRACT_AUDIO"));
-
-        // 4. DESI DAILY
-        fullToolList.add(new SuperTool("Vehicle Challan Check", "🚗", "Desi Daily", "Check plate & pending dues", "CHECK", "ACTION_CHALLAN"));
-        fullToolList.add(new SuperTool("Mandi Live Rates", "🥦", "Desi Daily", "Today's mandi vegetable rates", "LIVE", "ACTION_MANDI"));
-        fullToolList.add(new SuperTool("Smart Bill Splitter", "🧾", "Desi Daily", "Split bills with UPI QR", "UPI", "ACTION_SPLIT"));
-        fullToolList.add(new SuperTool("Petrol Pump Radar", "⛽", "Desi Daily", "Detects meter jumps", "ALERT", "ACTION_PUMP"));
-
-        // 5. OFFICE & PDF
-        fullToolList.add(new SuperTool("Image to PDF Maker", "📑", "Office & PDF", "Convert images to clean PDF", "OFFLINE", "ACTION_IMG_PDF"));
-        fullToolList.add(new SuperTool("PDF Compressor", "🗜️", "Office & PDF", "Shrink size below 100KB", "TOOL", "ACTION_COMPRESS_PDF"));
-        fullToolList.add(new SuperTool("OCR Text Grabber", "📝", "Office & PDF", "Extract text from image", "TOOL", "ACTION_OCR"));
-    }
-
-    static class SuperTool {
-        String name, icon, category, desc, badge, action;
-
-        SuperTool(String name, String icon, String category, String desc, String badge, String action) {
-            this.name = name;
-            this.icon = icon;
-            this.category = category;
-            this.desc = desc;
-            this.badge = badge;
-            this.action = action;
+        if ("HOME".equals(tab)) {
+            tabHomeView.setVisibility(View.VISIBLE);
+            txtNavHome.setTextColor(Color.parseColor("#7C5DFA"));
+        } else if ("MOVIES".equals(tab)) {
+            tabMoviesView.setVisibility(View.VISIBLE);
+            txtNavMovies.setTextColor(Color.parseColor("#7C5DFA"));
+        } else if ("CHAT".equals(tab)) {
+            tabChatView.setVisibility(View.VISIBLE);
+            txtNavChat.setTextColor(Color.parseColor("#7C5DFA"));
         }
     }
 
-    static class ToolAdapter extends RecyclerView.Adapter<ToolHolder> {
-        private final List<SuperTool> list;
-        private final OnToolClickListener listener;
+    // --- 12 बॉक्सेस पर क्लिक करने पर क्या होगा ---
+    private void setupAstraXBoxes() {
+        // AI Studio (1 - 25)
+        findViewById(R.id.boxAiStudio).setOnClickListener(v -> 
+            Toast.makeText(this, "AI Studio (Tools 1–25) Launching...", Toast.LENGTH_SHORT).show());
 
-        interface OnToolClickListener {
-            void onClick(SuperTool tool);
-        }
+        // Offline Tools (26 - 50) -> स्पीकर वाटर क्लीनर
+        findViewById(R.id.boxOfflineTools).setOnClickListener(v -> {
+            Intent intent = new Intent(this, HardwareEngineActivity.class);
+            intent.putExtra("TARGET_ACTION", "ACTION_SPEAKER");
+            startActivity(intent);
+        });
 
-        ToolAdapter(List<SuperTool> list, OnToolClickListener listener) {
-            this.list = list;
-            this.listener = listener;
-        }
+        // Privacy Tools (51 - 70) -> एंटी-थेफ्ट जेबकतरा अलार्म
+        findViewById(R.id.boxPrivacyTools).setOnClickListener(v -> {
+            Intent intent = new Intent(this, HardwareEngineActivity.class);
+            intent.putExtra("TARGET_ACTION", "ACTION_THEFT");
+            startActivity(intent);
+        });
 
-        @NonNull
-        @Override
-        public ToolHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_tool_card, parent, false);
-            return new ToolHolder(v);
-        }
+        // Reels (Direct Play)
+        findViewById(R.id.boxReels).setOnClickListener(v -> {
+            Intent intent = new Intent(this, ReelsActivity.class);
+            startActivity(intent);
+        });
 
-        @Override
-        public void onBindViewHolder(@NonNull ToolHolder holder, int position) {
-            SuperTool tool = list.get(position);
-            holder.tvIcon.setText(tool.icon);
-            holder.tvName.setText(tool.name);
-            holder.tvDesc.setText(tool.desc);
-            holder.tvBadge.setText(tool.badge);
+        // Movies (Direct Play)
+        findViewById(R.id.boxMovies).setOnClickListener(v -> switchTab("MOVIES"));
 
-            if ("AI".equals(tool.badge)) {
-                holder.tvBadge.setTextColor(Color.parseColor("#FF007F"));
-            } else if ("OFFLINE".equals(tool.badge)) {
-                holder.tvBadge.setTextColor(Color.parseColor("#00FFB2"));
-            } else {
-                holder.tvBadge.setTextColor(Color.parseColor("#FFAA00"));
-            }
+        // Chat (Secure)
+        findViewById(R.id.boxChat).setOnClickListener(v -> switchTab("CHAT"));
 
-            holder.itemView.setOnClickListener(v -> listener.onClick(tool));
-        }
+        // Social Savers (71 - 90)
+        findViewById(R.id.boxSocialSavers).setOnClickListener(v -> 
+            Toast.makeText(this, "Social Savers: Insta, WA & Video Grabber...", Toast.LENGTH_SHORT).show());
 
-        @Override
-        public int getItemCount() {
-            return list.size();
-        }
+        // Office & PDF (91 - 110)
+        findViewById(R.id.boxOfficePdf).setOnClickListener(v -> 
+            Toast.makeText(this, "Office & PDF Scanner Tools Launching...", Toast.LENGTH_SHORT).show());
+
+        // Desi Life (111 - 130)
+        findViewById(R.id.boxDesiLife).setOnClickListener(v -> 
+            Toast.makeText(this, "Desi Life: Mandi, Challan & Fuel Rates...", Toast.LENGTH_SHORT).show());
+
+        // System Boost (131 - 150)
+        findViewById(R.id.boxSystemBoost).setOnClickListener(v -> 
+            Toast.makeText(this, "System Boost: Cleaning RAM & Junk...", Toast.LENGTH_SHORT).show());
+
+        // Media Tools (151 - 165)
+        findViewById(R.id.boxMediaTools).setOnClickListener(v -> 
+            Toast.makeText(this, "Media Tools: MP3, Equalizer & Player...", Toast.LENGTH_SHORT).show());
+
+        // More Tools (Extra)
+        findViewById(R.id.boxMoreTools).setOnClickListener(v -> 
+            Toast.makeText(this, "All 165+ Master Tools Loaded!", Toast.LENGTH_SHORT).show());
     }
 
-    static class ToolHolder extends RecyclerView.ViewHolder {
-        TextView tvIcon, tvName, tvDesc, tvBadge;
+    // --- पैनिक स्विच और गुप्त चैट का लॉजिक ---
+    private void setupPanicAndSecretVault() {
+        // फ्लोटिंग पैनिक स्विच: छूते ही NCERT Physics Notes (पढ़ाई) खुल जाएगी
+        findViewById(R.id.floatingPanicSwitch).setOnClickListener(v -> {
+            panicStudyScreen.setVisibility(View.VISIBLE);
+        });
 
-        ToolHolder(@NonNull View itemView) {
-            super(itemView);
-            tvIcon = itemView.findViewById(R.id.tvToolIcon);
-            tvName = itemView.findViewById(R.id.tvToolName);
-            tvDesc = itemView.findViewById(R.id.tvToolDesc);
-            tvBadge = itemView.findViewById(R.id.tvBadge);
+        // पढ़ाई मोड से वापस आने का बटन
+        findViewById(R.id.btnExitPanic).setOnClickListener(v -> {
+            panicStudyScreen.setVisibility(View.GONE);
+        });
+
+        // चैट स्क्रीन पर 3-डॉट मेनू
+        findViewById(R.id.btnChatMenuDots).setOnClickListener(v -> {
+            String[] options = {"New Group", "Broadcast", "Starred Messages", "🔒 Privacy (Secret Vault)", "Settings"};
+            new AlertDialog.Builder(this)
+                    .setTitle("Chat Options")
+                    .setItems(options, (dialog, which) -> {
+                        if (which == 3) {
+                            // Secret PIN Pad खोलना
+                            secretPinPadOverlay.setVisibility(View.VISIBLE);
+                        }
+                    })
+                    .show();
+        });
+
+        // सीक्रेट चैट पिन कैंसिल बटन
+        findViewById(R.id.btnCancelPin).setOnClickListener(v -> {
+            secretPinPadOverlay.setVisibility(View.GONE);
+        });
+    }
+
+    // फोन का बैक बटन दबाने पर हैंडलिंग
+    @Override
+    public void onBackPressed() {
+        if (panicStudyScreen.getVisibility() == View.VISIBLE) {
+            panicStudyScreen.setVisibility(View.GONE);
+        } else if (secretPinPadOverlay.getVisibility() == View.VISIBLE) {
+            secretPinPadOverlay.setVisibility(View.GONE);
+        } else {
+            super.onBackPressed();
         }
     }
-          }
-              
+                            }
