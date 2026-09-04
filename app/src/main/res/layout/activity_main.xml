@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottomBarAstraX">
 
-        <!-- ================= TAB 1: HOME ================= -->
+        <!-- TAB 1: HOME -->
         <ScrollView
             android:id="@+id/tabHomeView"
             android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                 android:paddingEnd="16dp"
                 android:paddingBottom="24dp">
 
-                <!-- 1. Header -->
+                <!-- Header -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -87,7 +87,7 @@
                     </LinearLayout>
                 </RelativeLayout>
 
-                <!-- 2. Banner -->
+                <!-- Banner -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="115dp"
@@ -130,7 +130,7 @@
                         android:textSize="48sp" />
                 </RelativeLayout>
 
-                <!-- 3. Quick Access Bar -->
+                <!-- Quick Access Header -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
                         android:textStyle="bold" />
                 </RelativeLayout>
 
-                <!-- 4. 12 Grid Boxes -->
+                <!-- 12 Boxes -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -169,7 +169,6 @@
                         android:orientation="horizontal"
                         android:weightSum="3">
 
-                        <!-- AI Studio -->
                         <LinearLayout
                             android:id="@+id/boxAiStudio"
                             android:layout_width="0dp"
@@ -184,7 +183,6 @@
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(1 – 25)" android:textColor="#B39DDB" android:textSize="10sp" />
                         </LinearLayout>
 
-                        <!-- Offline Tools -->
                         <LinearLayout
                             android:id="@+id/boxOfflineTools"
                             android:layout_width="0dp"
@@ -199,7 +197,6 @@
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(26 – 50)" android:textColor="#80CBC4" android:textSize="10sp" />
                         </LinearLayout>
 
-                        <!-- Privacy Tools -->
                         <LinearLayout
                             android:id="@+id/boxPrivacyTools"
                             android:layout_width="0dp"
@@ -222,7 +219,6 @@
                         android:orientation="horizontal"
                         android:weightSum="3">
 
-                        <!-- Reels -->
                         <LinearLayout
                             android:id="@+id/boxReels"
                             android:layout_width="0dp"
@@ -237,7 +233,6 @@
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(Direct Play)" android:textColor="#F48FB1" android:textSize="10sp" />
                         </LinearLayout>
 
-                        <!-- Movies -->
                         <LinearLayout
                             android:id="@+id/boxMovies"
                             android:layout_width="0dp"
@@ -252,7 +247,6 @@
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(Direct Play)" android:textColor="#90CAF9" android:textSize="10sp" />
                         </LinearLayout>
 
-                        <!-- Chat -->
                         <LinearLayout
                             android:id="@+id/boxChat"
                             android:layout_width="0dp"
@@ -275,7 +269,6 @@
                         android:orientation="horizontal"
                         android:weightSum="3">
 
-                        <!-- Social Savers -->
                         <LinearLayout
                             android:id="@+id/boxSocialSavers"
                             android:layout_width="0dp"
@@ -290,7 +283,6 @@
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(71 – 90)" android:textColor="#FFCC80" android:textSize="10sp" />
                         </LinearLayout>
 
-                        <!-- Office & PDF -->
                         <LinearLayout
                             android:id="@+id/boxOfficePdf"
                             android:layout_width="0dp"
@@ -305,7 +297,6 @@
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(91 – 110)" android:textColor="#80DEEA" android:textSize="10sp" />
                         </LinearLayout>
 
-                        <!-- Desi Life -->
                         <LinearLayout
                             android:id="@+id/boxDesiLife"
                             android:layout_width="0dp"
@@ -328,7 +319,6 @@
                         android:orientation="horizontal"
                         android:weightSum="3">
 
-                        <!-- System Boost -->
                         <LinearLayout
                             android:id="@+id/boxSystemBoost"
                             android:layout_width="0dp"
@@ -339,4 +329,12 @@
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡" android:textSize="26sp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="System Boost" android:textColor="#FFFFFF" android:textS
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="System Boost" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(131 – 150)" android:textColor="#90CAF9" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/boxMediaTools"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+   
