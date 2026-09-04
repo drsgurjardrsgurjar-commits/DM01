@@ -2,76 +2,341 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0D0E15">
+    android:background="#090A10">
 
-    <!-- टॉप हेडर -->
-    <LinearLayout
-        android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Desi SuperApp ⚡"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="160+ AI, Hardware &amp; Utility Tools"
-            android:textColor="#88889D"
-            android:textSize="12sp" />
-
-        <!-- सर्च बार -->
-        <EditText
-            android:id="@+id/etSearchTools"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_marginTop="12dp"
-            android:background="#1B1C26"
-            android:drawableStart="@android:drawable/ic_menu_search"
-            android:drawablePadding="10dp"
-            android:hint="Search 160+ tools (e.g. speaker, bg, challan)..."
-            android:inputType="text"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#66667A"
-            android:textSize="14sp" />
-    </LinearLayout>
-
-    <!-- हॉरिजॉन्टल कैटेगरी टैब्स स्क्रॉलर -->
-    <HorizontalScrollView
-        android:id="@+id/categoryScroll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/topBar"
-        android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:id="@+id/chipGroupCategories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp" />
-    </HorizontalScrollView>
-
-    <!-- 2-कॉलम टूल्स ग्रिड -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvToolsGrid"
+    <!-- मुख्य कंटेंट एरिया -->
+    <FrameLayout
+        android:id="@+id/mainContentFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/categoryScroll"
-        android:clipToPadding="false"
-        android:padding="10dp" />
+        android:layout_above="@id/bottomBarAstraX">
 
-</RelativeLayout>
+        <!-- ================= TAB 1: HOME ================= -->
+        <ScrollView
+            android:id="@+id/tabHomeView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="24dp">
+
+                <!-- 1. AstraX हेडर -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AstraX"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="All-In-One Super App"
+                            android:textColor="#8D92A3"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="6dp"
+                            android:text="👑"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="6dp"
+                            android:text="🔍"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/btnMenuTop"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="6dp"
+                            android:text="⋮"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <!-- 2. 165+ Powerful Tools बैनर -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="115dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/card_purple_box"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toStartOf="@id/bannerGlow"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="165+ Powerful Tools"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:lineSpacingExtra="2dp"
+                            android:text="AI • Offline • Privacy • Media • Office\nMoney • System • More"
+                            android:textColor="#B2B7D0"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/bannerGlow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="🌀"
+                        android:textSize="48sp" />
+                </RelativeLayout>
+
+                <!-- 3. Quick Access पट्टी -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quick Access"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnViewAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="View All"
+                        android:textColor="#7C5DFA"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <!-- 4. इमेज के पूरे 12 बॉक्सेस (Row 1 से 4) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical">
+
+                    <!-- ROW 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <!-- 1. AI Studio -->
+                        <LinearLayout
+                            android:id="@+id/boxAiStudio"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_purple_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🤖" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="AI Studio" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(1 – 25)" android:textColor="#B39DDB" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <!-- 2. Offline Tools -->
+                        <LinearLayout
+                            android:id="@+id/boxOfflineTools"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_green_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📶" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Offline Tools" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(26 – 50)" android:textColor="#80CBC4" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <!-- 3. Privacy Tools -->
+                        <LinearLayout
+                            android:id="@+id/boxPrivacyTools"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_purple_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎭" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Privacy Tools" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(51 – 70)" android:textColor="#CE93D8" android:textSize="10sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- ROW 2 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <!-- 4. Reels -->
+                        <LinearLayout
+                            android:id="@+id/boxReels"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_purple_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="▶️" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Reels" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(Direct Play)" android:textColor="#F48FB1" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <!-- 5. Movies -->
+                        <LinearLayout
+                            android:id="@+id/boxMovies"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_purple_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎬" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Movies" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(Direct Play)" android:textColor="#90CAF9" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <!-- 6. Chat -->
+                        <LinearLayout
+                            android:id="@+id/boxChat"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_green_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💬" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Chat" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(Secure)" android:textColor="#A5D6A7" android:textSize="10sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- ROW 3 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <!-- 7. Social Savers -->
+                        <LinearLayout
+                            android:id="@+id/boxSocialSavers"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_purple_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📥" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Social Savers" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(71 – 90)" android:textColor="#FFCC80" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <!-- 8. Office & PDF -->
+                        <LinearLayout
+                            android:id="@+id/boxOfficePdf"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_green_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📑" android:textSize="26sp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Office &amp; PDF" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(91 – 110)" android:textColor="#80DEEA" android:textSize="10sp" />
+                        </LinearLayout>
+
+                        <!-- 9. Desi Life -->
+                        <LinearLayout
+                            android:id="@+id/boxDesiLife"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_purple_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹" android:textColor="#FFD54F" android:textSize="26sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Desi Life" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(111 – 130)" android:textColor="#FFE082" android:textSize="10sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- ROW 4 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <!-- 10. System Boost -->
+                        <LinearLayout
+                            android:id="@+id/boxSystemBoost"
+                            android:layout_width="0dp"
+                            android:layout_height="96dp"
+                            android:layout_margin="4dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/card_purple_box"
+                            android:gravity="center"
+                            android:orientation="vertical">
+                            <TextView android:layout_width="
