@@ -22,13 +22,13 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
     private String actionType = "ACTION_SPEAKER";
     private boolean isRunning = false;
 
-    // Speaker Cleaner AudioTrack
+    // Speaker Cleaner
     private AudioTrack audioTrack;
     private Thread soundThread;
 
-    // Pocket-Grab Anti-Theft
+    // Sensor Management
     private SensorManager sensorManager;
-    private Sensor proximitySensor;
+    private Sensor activeSensor;
     private Ringtone alarmRingtone;
     private boolean wasInPocket = false;
 
@@ -50,6 +50,8 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
         tvInstruction = findViewById(R.id.tvToolInstruction);
         btnToggle = findViewById(R.id.btnToggleEngine);
 
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
         setupToolMode();
 
         btnToggle.setOnClickListener(v -> {
@@ -65,22 +67,28 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
         if ("ACTION_THEFT".equals(actionType)) {
             tvVisualIcon.setText("🚨");
             tvStatusHeader.setText("Anti-Theft Pocket Guard");
-            tvInstruction.setText("फोन जेब में रखें। जेब से निकालते ही फुल सायरन बज जाएगा।");
+            tvInstruction.setText("फ़ोन जेब में रखें। जेब से बाहर खींचते ही सायरन बजेगा।");
             btnToggle.setText("ACTIVATE GUARD");
-            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
             if (sensorManager != null) {
-                proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                activeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
             }
             Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
             if (alarmUri == null) {
                 alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
             }
             alarmRingtone = RingtoneManager.getRingtone(getApplicationContext(), alarmUri);
+        } else if ("ACTION_EMF".equals(actionType)) {
+            tvVisualIcon.setText("🧲");
+            tvStatusHeader.setText("Stud & Wire Finder");
+            tvInstruction.setText("फ़ोन को दीवार पर फिराएं। तार या लोहे के पास रीडिंग बढ़ेगी।");
+            btnToggle.setText("START DETECTOR");
+            if (sensorManager != null) {
+                activeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+            }
         } else {
-            // डिफॉल्ट: स्पीकर क्लीनर
             tvVisualIcon.setText("🔊");
             tvStatusHeader.setText("Speaker Water Cleaner");
-            tvInstruction.setText("वॉल्यूम 100% करें और फोन का स्पीकर नीचे की तरफ रखें।");
+            tvInstruction.setText("वॉल्यूम 100% करें और फ़ोन का स्पीकर नीचे की तरफ रखें।");
             btnToggle.setText("START CLEANING (165Hz)");
         }
     }
@@ -90,16 +98,22 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
         btnToggle.setText("STOP");
 
         if ("ACTION_THEFT".equals(actionType)) {
-            if (proximitySensor != null) {
-                sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+            if (activeSensor != null) {
+                sensorManager.registerListener(this, activeSensor, SensorManager.SENSOR_DELAY_NORMAL);
                 tvStatusHeader.setText("Guard Activated 🔒");
-                tvInstruction.setText("अब फोन अपनी जेब में डालें...");
+                tvInstruction.setText("अब फ़ोन जेब में रख लें...");
                 Toast.makeText(this, "Guard On! Phone pocket me dalein", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Proximity Sensor Not Found!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Proximity Sensor Not Supported!", Toast.LENGTH_SHORT).show();
+            }
+        } else if ("ACTION_EMF".equals(actionType)) {
+            if (activeSensor != null) {
+                sensorManager.registerListener(this, activeSensor, SensorManager.SENSOR_DELAY_UI);
+                tvStatusHeader.setText("Scanning Magnetic Field...");
+            } else {
+                Toast.makeText(this, "Magnetic Sensor Not Available!", Toast.LENGTH_SHORT).show();
             }
         } else {
-            // 165Hz अल्ट्रा रेजोनेंस पल्स स्टार्ट
             tvStatusHeader.setText("Ejecting Water & Dust...");
             start165HzTone();
         }
@@ -107,34 +121,35 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
 
     private void stopFeature() {
         isRunning = false;
-        btnToggle.setText("ACTION_THEFT".equals(actionType) ? "ACTIVATE GUARD" : "START CLEANING");
+        if ("ACTION_THEFT".equals(actionType)) {
+            btnToggle.setText("ACTIVATE GUARD");
+        } else if ("ACTION_EMF".equals(actionType)) {
+            btnToggle.setText("START DETECTOR");
+        } else {
+            btnToggle.setText("START CLEANING (165Hz)");
+        }
         tvStatusHeader.setText("Stopped");
 
-        if ("ACTION_THEFT".equals(actionType)) {
-            if (sensorManager != null) sensorManager.unregisterListener(this);
-            if (alarmRingtone != null && alarmRingtone.isPlaying()) alarmRingtone.stop();
-            wasInPocket = false;
-        } else {
-            stop165HzTone();
-        }
+        if (sensorManager != null) sensorManager.unregisterListener(this);
+        if (alarmRingtone != null && alarmRingtone.isPlaying()) alarmRingtone.stop();
+        wasInPocket = false;
+        stop165HzTone();
     }
 
-    // 165Hz Sound Generator Logic
     private void start165HzTone() {
         soundThread = new Thread(() -> {
             int sampleRate = 44100;
-            int numSamples = sampleRate;
-            double[] sample = new double[numSamples];
-            byte[] generatedSnd = new byte[2 * numSamples];
-            double freqOfTone = 165.0; // 165Hz पानी निकालने की सटीक फ्रीक्वेंसी
+            double freqOfTone = 165.0;
+            double[] sample = new double[sampleRate];
+            byte[] generatedSnd = new byte[2 * sampleRate];
 
-            for (int i = 0; i < numSamples; ++i) {
+            for (int i = 0; i < sampleRate; ++i) {
                 sample[i] = Math.sin(2 * Math.PI * i / (sampleRate / freqOfTone));
             }
 
             int idx = 0;
             for (final double dVal : sample) {
-                final short val = (short) ((dVal * 32767));
+                final short val = (short) (dVal * 32767);
                 generatedSnd[idx++] = (byte) (val & 0x00ff);
                 generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
             }
@@ -144,10 +159,12 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
                     AudioFormat.ENCODING_PCM_16BIT, generatedSnd.length,
                     AudioTrack.MODE_STREAM);
 
-            audioTrack.play();
-            while (isRunning) {
-                audioTrack.write(generatedSnd, 0, generatedSnd.length);
-            }
+            try {
+                audioTrack.play();
+                while (isRunning) {
+                    audioTrack.write(generatedSnd, 0, generatedSnd.length);
+                }
+            } catch (Exception ignored) {}
         });
         soundThread.start();
     }
@@ -163,30 +180,31 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+        if ("ACTION_THEFT".equals(actionType) && event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
             float distance = event.values[0];
-            // जब फोन जेब के अंदर है (सेंसर के पास कोई चीज़ है)
-            if (distance < proximitySensor.getMaximumRange()) {
+            if (distance < activeSensor.getMaximumRange()) {
                 wasInPocket = true;
-                tvInstruction.setText("फोन जेब के अंदर सुरक्षित है...");
+                tvInstruction.setText("फ़ोन जेब में सुरक्षित है...");
             } else {
-                // फोन जेब से बाहर खींचा गया
                 if (wasInPocket && isRunning) {
-                    triggerSiren();
+                    tvStatusHeader.setText("🚨 THEFT DETECTED! 🚨");
+                    tvInstruction.setText("सायरन बज रहा है! बंद करने के लिए STOP दबाएँ!");
+                    if (alarmRingtone != null && !alarmRingtone.isPlaying()) {
+                        alarmRingtone.play();
+                    }
                 }
             }
-        }
-    }
-
-    private void triggerSiren() {
-        tvStatusHeader.setText("🚨 THEFT DETECTED! 🚨");
-        tvInstruction.setText("अलार्म बंद करने के लिए STOP दबाएँ!");
-        if (alarmRingtone != null && !alarmRingtone.isPlaying()) {
-            AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            if (am != null) {
-                am.setStreamVolume(AudioManager.STREAM_ALARM, am.getStreamMaxVolume(AudioManager.STREAM_ALARM), 0);
+        } else if ("ACTION_EMF".equals(actionType) && event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+            double field = Math.sqrt(x * x + y * y + z * z);
+            tvStatusHeader.setText(String.format("Magnetic: %.1f µT", field));
+            if (field > 65.0) {
+                tvInstruction.setText("⚠️ धातु या बिजली का तार पास है!");
+            } else {
+                tvInstruction.setText("दीवार साफ़ है।");
             }
-            alarmRingtone.play();
         }
     }
 
@@ -198,5 +216,4 @@ public class HardwareEngineActivity extends AppCompatActivity implements SensorE
         stopFeature();
         super.onDestroy();
     }
-              }
-                
+    }
