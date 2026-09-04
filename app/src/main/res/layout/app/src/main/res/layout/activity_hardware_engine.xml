@@ -86,7 +86,7 @@
             android:textSize="13sp" />
     </LinearLayout>
 
-    <!-- मुख्य एक्शन बटन -->
+    <!-- मुख्य एक्शन बटन (आईडी: btnToggleEngine) -->
     <Button
         android:id="@+id/btnToggleEngine"
         android:layout_width="match_parent"
