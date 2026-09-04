@@ -7,13 +7,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@android:drawable/sym_def_app_icon"
         android:label="Desi SuperApp"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <!-- सिर्फ और सिर्फ MainActivity में LAUNCHER होना चाहिए -->
+        <!-- मुख्य स्क्रीन (Launcher Dashboard) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -24,11 +23,13 @@
             </intent-filter>
         </activity>
 
+        <!-- हार्डवेयर सेंसर टूल्स स्क्रीन -->
         <activity
             android:name=".HardwareEngineActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- रील्स प्लेयर स्क्रीन -->
         <activity
             android:name=".ReelsActivity"
             android:exported="false"
@@ -37,4 +38,3 @@
     </application>
 
 </manifest>
-
