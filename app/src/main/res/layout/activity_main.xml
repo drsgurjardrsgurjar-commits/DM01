@@ -87,12 +87,12 @@
                     </LinearLayout>
                 </RelativeLayout>
 
-                <!-- 2. 165+ Powerful Tools Banner -->
+                <!-- 2. Banner -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="115dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/card_purple_box"
+                    android:background="#1B1736"
                     android:padding="16dp">
 
                     <LinearLayout
@@ -176,7 +176,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
+                            android:background="#2E1B4E"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🤖" android:textSize="26sp" />
@@ -191,7 +191,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_green_box"
+                            android:background="#0A3323"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📶" android:textSize="26sp" />
@@ -206,7 +206,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
+                            android:background="#2B1A3D"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎭" android:textSize="26sp" />
@@ -229,7 +229,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
+                            android:background="#4A1525"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="▶️" android:textSize="26sp" />
@@ -244,7 +244,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
+                            android:background="#102542"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎬" android:textSize="26sp" />
@@ -259,7 +259,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_green_box"
+                            android:background="#153B2F"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💬" android:textSize="26sp" />
@@ -282,7 +282,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
+                            android:background="#422510"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📥" android:textSize="26sp" />
@@ -297,7 +297,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_green_box"
+                            android:background="#103A3A"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📑" android:textSize="26sp" />
@@ -312,7 +312,7 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
+                            android:background="#3D320A"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="₹" android:textColor="#FFD54F" android:textSize="26sp" android:textStyle="bold" />
@@ -335,405 +335,8 @@
                             android:layout_height="96dp"
                             android:layout_margin="4dp"
                             android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
+                            android:background="#14213D"
                             android:gravity="center"
                             android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡" android:textSize="26sp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="System Boost" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(131 – 150)" android:textColor="#90CAF9" android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <!-- Media Tools -->
-                        <LinearLayout
-                            android:id="@+id/boxMediaTools"
-                            android:layout_width="0dp"
-                            android:layout_height="96dp"
-                            android:layout_margin="4dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
-                            android:gravity="center"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎵" android:textSize="26sp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Media Tools" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(151 – 165)" android:textColor="#C5CAE9" android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <!-- More Tools -->
-                        <LinearLayout
-                            android:id="@+id/boxMoreTools"
-                            android:layout_width="0dp"
-                            android:layout_height="96dp"
-                            android:layout_margin="4dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/card_purple_box"
-                            android:gravity="center"
-                            android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⸬" android:textColor="#FFFFFF" android:textSize="26sp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="More Tools" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(Extra)" android:textColor="#B0BEC5" android:textSize="10sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- 5. System Status -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="System Status"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
-                    android:weightSum="4">
-
-                    <!-- Storage -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/card_purple_box"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Storage" android:textColor="#8E92B2" android:textSize="11sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="62%" android:textColor="#00FFB2" android:textSize="16sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="40 GB / 64 GB" android:textColor="#5C607E" android:textSize="9sp" />
-                    </LinearLayout>
-
-                    <!-- Battery -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/card_purple_box"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Battery" android:textColor="#8E92B2" android:textSize="11sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="78%" android:textColor="#00FFB2" android:textSize="16sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Normal" android:textColor="#5C607E" android:textSize="9sp" />
-                    </LinearLayout>
-
-                    <!-- RAM -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/card_purple_box"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RAM" android:textColor="#8E92B2" android:textSize="11sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="61%" android:textColor="#FFAA00" android:textSize="16sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="2.3 GB / 4 GB" android:textColor="#5C607E" android:textSize="9sp" />
-                    </LinearLayout>
-
-                    <!-- Temp -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="3dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/card_purple_box"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="12dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Temp" android:textColor="#8E92B2" android:textSize="11sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:text="32°C" android:textColor="#00FFB2" android:textSize="16sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="Good" android:textColor="#5C607E" android:textSize="9sp" />
-                    </LinearLayout>
-                </LinearLayout>
-
-            </LinearLayout>
-        </ScrollView>
-
-        <!-- ================= TAB 2: MOVIES ================= -->
-        <ScrollView
-            android:id="@+id/tabMoviesView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Movies"
-                    android:textColor="#FFFFFF"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/card_purple_box" android:paddingStart="12dp" android:paddingTop="4dp" android:paddingEnd="12dp" android:paddingBottom="4dp" android:text="Popular" android:textColor="#FFFFFF" android:textSize="12sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/card_purple_box" android:paddingStart="12dp" android:paddingTop="4dp" android:paddingEnd="12dp" android:paddingBottom="4dp" android:text="Latest" android:textColor="#8E92B2" android:textSize="12sp" />
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/card_purple_box" android:paddingStart="12dp" android:paddingTop="4dp" android:paddingEnd="12dp" android:paddingBottom="4dp" android:text="Action" android:textColor="#8E92B2" android:textSize="12sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/cardKgf2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/card_purple_box"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:background="#2E1B15"
-                        android:gravity="center"
-                        android:text="K.G.F 2\n[Poster Preview]"
-                        android:textColor="#FFB74D"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="KGF: Chapter 2"
-                        android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2022 • 2h 48m • Action / Drama"
-                        android:textColor="#8E92B2"
-                        android:textSize="11sp" />
-
-                    <Button
-                        android:id="@+id/btnWatchKgf"
-                        android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:layout_marginTop="10dp"
-                        android:backgroundTint="#7C5DFA"
-                        android:text="▶ Watch Now"
-                        android:textColor="#FFFFFF" />
-                </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
-
-        <!-- ================= TAB 3: CHAT ================= -->
-        <LinearLayout
-            android:id="@+id/tabChatView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:visibility="gone">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chat" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/btnChatMenuDots"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:padding="6dp"
-                    android:text="⋮"
-                    android:textColor="#FFFFFF"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical">
-
-                <LinearLayout android:layout_width="match_parent" android:layout_height="55dp" android:gravity="center_vertical">
-                    <TextView android:layout_width="42dp" android:layout_height="42dp" android:background="@drawable/card_purple_box" android:gravity="center" android:text="🧔" android:textSize="20sp" />
-                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Aman" android:textColor="#FFFFFF" android:textSize="14sp" android:textStyle="bold" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hey! Kaise ho?" android:textColor="#8E92B2" android:textSize="12sp" />
-                    </LinearLayout>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="12:25 PM" android:textColor="#5C607E" android:textSize="11sp" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- ================= SECRET PIN PAD ================= -->
-        <LinearLayout
-            android:id="@+id/secretPinPadOverlay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#0A0B10"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:visibility="gone">
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔒 Secret Chat Access" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Enter 4-Digit PIN" android:textColor="#8E92B2" android:textSize="12sp" />
-            <TextView
-                android:id="@+id/tvPinDots"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:letterSpacing="0.4"
-                android:text="○ ○ ○ ○"
-                android:textColor="#7C5DFA"
-                android:textSize="26sp" />
-            <Button
-                android:id="@+id/btnCancelPin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:backgroundTint="#21153B"
-                android:text="Back to Normal"
-                android:textColor="#FFFFFF" />
-        </LinearLayout>
-
-        <!-- ================= PANIC SCREEN ================= -->
-        <LinearLayout
-            android:id="@+id/panicStudyScreen"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFFFFF"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="NCERT Class 12: Physics Notes"
-                android:textColor="#000000"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:lineSpacingExtra="4dp"
-                android:text="Chapter 1: Electric Charges and Fields\n\n1. Coulomb's Law: The force between two charges is directly proportional to product of charges.\n\nF = k * (|q1 * q2|) / r²"
-                android:textColor="#333333"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/btnExitPanic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:background="#EEEEEE"
-                android:padding="8dp"
-                android:text="Resume App"
-                android:textColor="#888888"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-    </FrameLayout>
-
-    <!-- FLOATING PANIC SWITCH -->
-    <TextView
-        android:id="@+id/floatingPanicSwitch"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_above="@id/bottomBarAstraX"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="12dp"
-        android:alpha="0.35"
-        android:background="@drawable/card_purple_box"
-        android:gravity="center"
-        android:text="⚡"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
-
-    <!-- 5 BOTTOM TABS -->
-    <LinearLayout
-        android:id="@+id/bottomBarAstraX"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
-        android:background="#0A0B10"
-        android:orientation="horizontal"
-        android:weightSum="5">
-
-        <LinearLayout
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏠" android:textSize="18sp" />
-            <TextView android:id="@+id/txtNavHome" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Home" android:textColor="#7C5DFA" android:textSize="10sp" android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navReels"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎬" android:textSize="18sp" />
-            <TextView android:id="@+id/txtNavReels" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Reels" android:textColor="#8E92B2" android:textSize="10sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navMovies"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🍿" android:textSize="18sp" />
-            <TextView android:id="@+id/txtNavMovies" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Movies" android:textColor="#8E92B2" android:textSize="10sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navChat"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💬" android:textSize="18sp" />
-            <TextView android:id="@+id/txtNavChat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chat" android:textColor="#8E92B2" android:textSize="10sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navProfile"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👤" android:textSize="18sp" />
-            <TextView android:id="@+id/txtNavProfile" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Profile" android:textColor="#8E92B2" android:textSize="10sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-</RelativeLayout>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="System Boost" android:textColor="#FFFFFF" android:textS
