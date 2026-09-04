@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <!-- होम स्क्रीन -->
+        <!-- सिर्फ और सिर्फ MainActivity में LAUNCHER होना चाहिए -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -24,13 +24,11 @@
             </intent-filter>
         </activity>
 
-        <!-- हार्डवेयर सेंसर एक्टिविटी -->
         <activity
             android:name=".HardwareEngineActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <!-- रील्स एक्टिविटी -->
         <activity
             android:name=".ReelsActivity"
             android:exported="false"
@@ -39,3 +37,4 @@
     </application>
 
 </manifest>
+
